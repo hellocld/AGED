@@ -17,10 +17,5 @@ public class BasicComponent implements IComponent {
 		// TODO Auto-generated method stub
 
 	}
-	@Override
-	public void die() {
-		// TODO Auto-generated method stub
-
-	}
 
 }

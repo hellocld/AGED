@@ -9,5 +9,4 @@ package com.hellocld.AGED.component;
  */
 public interface IComponent {
 	void update();
-	void die();
 }
