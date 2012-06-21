@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.hellocld.AGED.util;
+package com.hellocld.AGED.component;
 
 /**
  * A basic 2D vector class used to pass x and y (or width and height) variables between components
