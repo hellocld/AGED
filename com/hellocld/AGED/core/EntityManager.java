@@ -6,6 +6,8 @@ package com.hellocld.AGED.core;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * So this is the core Entity Manager, half of the heart of the whole system (the other half being the System Manager).
@@ -57,5 +59,43 @@ public class EntityManager {
 		if(result == null)
 			throw new IllegalArgumentException("getComponent FAIL: "+entity+" does not possess Component of class\nmissing:"+componentType);
 		return result;
+	}
+	
+	/**
+	 * Searches the database for all components of a specific type		
+	 * @param componentType	The type of component you're searching for
+	 * @return				A list of all the components of the searched type
+	 */
+	public <T extends Component> List<T> getAllComponentsOfType(Class<T> componentType)
+	{
+		//Make a temporary HashMap out of entries in componentDB; get only the values of the key "componentType"
+		HashMap<Integer, ? extends Component> dbResult = componentDB.get(componentType);
+		
+		//double-check to make sure componentType actually exists; if not, return an empty list
+		if(dbResult == null)
+			return new LinkedList<T>();
+		
+		//return the list of all entities containing componentType
+		return (List<T>) dbResult.values();
+	}
+	
+	/**
+	 * Returns a set of all entities containing "componentType"
+	 * 
+	 * @param <T>
+	 * @param componentType
+	 * @return					the keySet of the results of the search
+	 */
+	public <T extends Component> Set<Integer> getAllEntitiesPossessingComponent(Class<T> componentType)
+	{
+		//Make a temporary HashMap out of entries in componentDB; get only the values of the key "componentType"
+		HashMap<Integer, ? extends Component> dbResult = componentDB.get(componentType);
+		
+		//check to make sure dbResult isn't null; if it is, return an empty HashSet
+		if(dbResult == null)
+			return new HashSet<Integer>();
+		
+		//return the HashSet of all entities containing componentType
+		return dbResult.keySet();
 	}
 }
