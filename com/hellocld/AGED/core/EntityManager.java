@@ -66,7 +66,7 @@ public class EntityManager {
 	 * @param componentType	The type of component you're searching for
 	 * @return				A list of all the components of the searched type
 	 */
-	public <T extends Component> List<T> getAllComponentsOfType(Class<T> componentType)
+	public <T extends Component> List<T> getAllComponentsOfType( Class<T> componentType)
 	{
 		//Make a temporary HashMap out of entries in componentDB; get only the values of the key "componentType"
 		HashMap<Integer, ? extends Component> dbResult = componentDB.get(componentType);
@@ -86,7 +86,7 @@ public class EntityManager {
 	 * @param componentType
 	 * @return					the keySet of the results of the search
 	 */
-	public <T extends Component> Set<Integer> getAllEntitiesPossessingComponent(Class<T> componentType)
+	public <T extends Component> Set<Integer> getAllEntitiesPossessingComponent( Class<T> componentType)
 	{
 		//Make a temporary HashMap out of entries in componentDB; get only the values of the key "componentType"
 		HashMap<Integer, ? extends Component> dbResult = componentDB.get(componentType);
@@ -98,4 +98,23 @@ public class EntityManager {
 		//return the HashSet of all entities containing componentType
 		return dbResult.keySet();
 	}
+	
+	public <T extends Component> void addComponent(int entity, T component)
+	{
+		//make a temporary HashMap... you get the idea
+		//important to note that the put() that comes later actually affects componentDB, not just the temporary HashMap
+		HashMap<Integer, ? extends Component> dbResult = componentDB.get(component.getClass());
+		
+		//if the component you're adding is the first of it's kind we need to create a key for it in componentDB
+		if(dbResult == null)
+		{
+			dbResult = new HashMap<Integer, T>();
+			componentDB.put(component.getClass(), dbResult);
+		}
+		
+		//put the instance of the component into the DB, attached to the entity it's related to
+		((HashMap<Integer, T>)dbResult).put(entity, component);
+	}
+	
+	
 }
