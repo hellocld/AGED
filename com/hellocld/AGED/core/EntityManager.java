@@ -82,7 +82,6 @@ public class EntityManager {
 	/**
 	 * Returns a set of all entities containing "componentType"
 	 * 
-	 * @param <T>
 	 * @param componentType
 	 * @return					the keySet of the results of the search
 	 */
@@ -99,6 +98,11 @@ public class EntityManager {
 		return dbResult.keySet();
 	}
 	
+	/**
+	 * Adds a component to an Entity.
+	 * @param entity	The entity you're adding the component to
+	 * @param component	The component you're adding
+	 */
 	public <T extends Component> void addComponent(int entity, T component)
 	{
 		//make a temporary HashMap... you get the idea
