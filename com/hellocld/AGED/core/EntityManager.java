@@ -116,5 +116,57 @@ public class EntityManager {
 		((HashMap<Integer, T>)dbResult).put(entity, component);
 	}
 	
+	/**
+	 * Makes an Entity by adding it to the Entity List
+	 * @return	the ID of the entity
+	 */
+	public int createEntity()
+	{
+		//make a temporary integer via generateNewEntityID()
+		int newID = generateNewEntityID();
+		
+		if(newID<0)
+		{
+			//oh snap
+			return 0;
+		} else {
+			Entities.add(newID);
+			return newID;
+		}
+	}
+	
+	/**
+	 * Removes an entity from the Entity List
+	 * @param entity	the ID of the entity
+	 */
+	public void killEntity(int entity)
+	{
+		synchronized(this)
+		{
+			Entities.remove(entity);
+		}
+	}
+	
+	/**
+	 * Generates a new Entity ID. Since an entity is just a key in a database, we use integers as they're easy to keep track of.
+	 * @return	a new/unused ID value
+	 */
+	public int generateNewEntityID()
+	{
+		synchronized(this)
+		{
+			if(nextEntityID<Integer.MAX_VALUE)
+			{
+				return nextEntityID++;
+			} else {
+				for(int i = 1; i<Integer.MAX_VALUE; i++)
+				{
+					if(!Entities.contains(i))
+						return i;
+				}
+				throw new Error("ERROR: no available Entity IDs; too many entities!");
+			}
+		}
+	}
 	
 }
