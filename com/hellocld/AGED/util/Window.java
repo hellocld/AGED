@@ -25,7 +25,7 @@ public class Window {
 	 * @param height	The height of the window in pixels
 	 * @param fps		The sync rate in frames per second
 	 */
-	Window(int width, int height, int fps){
+	public Window(int width, int height, int fps){
 		this.width = width;
 		this.height = height;
 		this.fps = fps;
