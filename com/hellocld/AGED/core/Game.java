@@ -7,6 +7,7 @@ import com.hellocld.AGED.util.*;
 
 /**
  * A basic set of Game initiation functions. This is the starting point of every game using AGED
+ * 
  * @author CLD
  *
  */
