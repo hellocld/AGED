@@ -31,31 +31,32 @@ public class Render2DSystem implements ASystem {
 		
 		//get all the renderable Entities
 		Set<Integer> renderSet = em.getAllEntitiesPossessingComponent(Render.class);
-		//make an iterator from the set; faster than a standard for() loop
-		Iterator<Integer> renderInter = renderSet.iterator();
 		
-		//loop through all the renderable entities
-		while(renderInter.hasNext()) {
-			//double check just to make sure rendering is turned on; if it isn't, the entity is skipped
-			if(em.getComponent(renderInter.next(), Render.class).on) {
-				//gather all the necessary info from the components for rendering
-				float x = em.getComponent(renderInter.next(), Position2D.class).x;
-				float y = em.getComponent(renderInter.next(), Position2D.class).y;
-				float w = em.getComponent(renderInter.next(), Size2D.class).width;
-				float h = em.getComponent(renderInter.next(), Size2D.class).height;
-				
-				//set the color of the quad
-				glColor3f(1.0f, 1.0f, 1.0f);
-				
-				//draw the quad!
-				glBegin(GL_QUADS);
-					glVertex2f(x,y);
-					glVertex2f(x+w, y);
-					glVertex2f(x+w, y+h);
-					glVertex2f(x, y+h);
-				glEnd();
+		if(!renderSet.isEmpty()) {
+			//loop through all the renderable entities
+			for(Iterator<Integer> renderIter = renderSet.iterator(); renderIter.hasNext();) {
+				//double check just to make sure rendering is turned on; if it isn't, the entity is skipped
+				int entity = renderIter.next();
+				if(em.getComponent(entity, Render.class).on) {
+					//gather all the necessary info from the components for rendering
+					float x = em.getComponent(entity, Position2D.class).x;
+					float y = em.getComponent(entity, Position2D.class).y;
+					float w = em.getComponent(entity, Size2D.class).width;
+					float h = em.getComponent(entity, Size2D.class).height;
+					
+					//set the color of the quad
+					glColor3f(1.0f, 1.0f, 1.0f);
+					
+					//draw the quad!
+					glBegin(GL_QUADS);
+						glVertex2f(x,y);
+						glVertex2f(x+w, y);
+						glVertex2f(x+w, y+h);
+						glVertex2f(x, y+h);
+					glEnd();
+				}
 			}
-		}
+		}	
 	}
 
 }
