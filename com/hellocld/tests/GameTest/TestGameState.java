@@ -27,8 +27,8 @@ public class TestGameState extends GameState {
 		em.addComponent(testEntity, new Render());
 		em.getComponent(testEntity, Position2D.class).x = 10;
 		em.getComponent(testEntity, Position2D.class).y = 10;
-		em.getComponent(testEntity, Size2D.class).width = 2;
-		em.getComponent(testEntity, Size2D.class).height = 2;
+		em.getComponent(testEntity, Size2D.class).width = 20;
+		em.getComponent(testEntity, Size2D.class).height = 20;
 		
 		//add any Systems to the systems list
 		//Be sure to add them in the order you want them to execute
