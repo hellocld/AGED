@@ -42,6 +42,12 @@ public class Window {
 			e.printStackTrace();
 			System.exit(0);
 		}
+		
+		//also set up the camera, because hey, what the hell
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, width, height, 0, 1, -1);
+		glMatrixMode(GL_MODELVIEW);
 	}
 	
 	/**
