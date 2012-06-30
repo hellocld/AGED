@@ -8,6 +8,7 @@ import java.util.LinkedList;
 
 /**
  * A basic game state. It handles an EntityManager, the creation of objects, and a basic game loop
+ * 
  * @author CLD
  *
  */
