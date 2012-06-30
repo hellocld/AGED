@@ -18,6 +18,10 @@ public class TestGameState extends GameState {
 		
 		//add a test entity with a bunch of components
 		int testEntity = em.createEntity();
+		
+		//debug - print the testEntity's int value
+		//System.out.println("testEntity: "+testEntity);
+		
 		em.addComponent(testEntity, new Position2D());
 		em.addComponent(testEntity, new Size2D());
 		em.addComponent(testEntity, new Render());
