@@ -15,7 +15,7 @@ import com.hellocld.AGED.core.ASystem;
 
 
 /**
- * A very basic Rendering System
+ * A very basic 2D Rendering System
  * @author CLD
  *
  */
