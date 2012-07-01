@@ -3,9 +3,16 @@
  */
 package com.hellocld.tests.GameTest;
 
+import com.hellocld.AGED.basicComponents.Position2D;
+import com.hellocld.AGED.basicComponents.Render;
+import com.hellocld.AGED.basicComponents.SimpleMove;
+import com.hellocld.AGED.basicComponents.Size2D;
+import com.hellocld.AGED.basicComponents.Velocity2D;
+import com.hellocld.AGED.basicSystems.Render2DSystem;
+import com.hellocld.AGED.basicSystems.SimpleMoveSystem;
 import com.hellocld.AGED.core.GameState;
-import com.hellocld.AGED.basicComponents.*;
-import com.hellocld.AGED.basicSystems.*;
+import com.hellocld.tests.GameTest.ASystems.PlayerInputSystem;
+import com.hellocld.tests.GameTest.Components.PlayerInput;
 
 /**
  * A test GameState
@@ -20,11 +27,15 @@ public class TestGameState extends GameState {
 		int testEntity1 = em.createEntity();
 		em.addComponent(testEntity1, new Position2D());
 		em.addComponent(testEntity1, new Size2D());
+		em.addComponent(testEntity1, new Velocity2D());
 		em.addComponent(testEntity1, new Render());
+		em.addComponent(testEntity1, new PlayerInput());
 		em.getComponent(testEntity1, Position2D.class).x = 10;
 		em.getComponent(testEntity1, Position2D.class).y = 10;
 		em.getComponent(testEntity1, Size2D.class).width = 20;
 		em.getComponent(testEntity1, Size2D.class).height = 20;
+		em.getComponent(testEntity1, Velocity2D.class).xVel = 1;
+		em.getComponent(testEntity1, Velocity2D.class).yVel = 1;
 		
 		int testEntity2 = em.createEntity();
 		em.addComponent(testEntity2, new Position2D());
@@ -43,6 +54,7 @@ public class TestGameState extends GameState {
 		//Be sure to add them in the order you want them to execute
 		systems.add(new Render2DSystem());
 		systems.add(new SimpleMoveSystem());
+		systems.add(new PlayerInputSystem());
 	}
 	
 	public void update() {
