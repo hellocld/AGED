@@ -28,6 +28,7 @@ public class Game {
 		Window window = new Window(width, height, fps);
 		window.create();
 		this.gs = firstState;
+		gs.game = this;
 		gs.create();
 		
 		while(!window.isCloseRequested()){
@@ -44,6 +45,7 @@ public class Game {
 	 */
 	public void changeState(GameState gs) {
 		this.gs = gs;
+		gs.game = this;
 		gs.create();
 	}
 

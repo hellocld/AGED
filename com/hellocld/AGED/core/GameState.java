@@ -3,8 +3,8 @@
  */
 package com.hellocld.AGED.core;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A basic game state. It handles an EntityManager, the creation of objects, and a basic game loop
@@ -18,6 +18,9 @@ public class GameState {
 	
 	//the list of Systems executed during the update loop
 	public List<ASystem> systems;
+	
+	//the game; used to switch states
+	public Game game;
 	
 	public GameState() {
 		
