@@ -11,12 +11,12 @@ import com.hellocld.AGED.core.*;
  *
  */
 public class TestGame {
-
+	public static Game testGame;
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		final Game testGame = new Game();
+		testGame = new Game();
 		
 		testGame.createGame(320, 240, 60, new TestGameState());
 

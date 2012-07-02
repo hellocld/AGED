@@ -20,11 +20,15 @@ import com.hellocld.tests.GameTest.Components.PlayerInput;
  *
  */
 public class TestGameState extends GameState {
+	//the entities
+	public int testEntity1;
+	public int testEntity2;
+	
 	public void create() {
 		super.create();
 		
 		//add a couple test entities with a bunch of components
-		int testEntity1 = em.createEntity();
+		testEntity1 = em.createEntity();
 		em.addComponent(testEntity1, new Position2D());
 		em.addComponent(testEntity1, new Size2D());
 		em.addComponent(testEntity1, new Velocity2D());
@@ -37,7 +41,7 @@ public class TestGameState extends GameState {
 		em.getComponent(testEntity1, Velocity2D.class).xVel = 1;
 		em.getComponent(testEntity1, Velocity2D.class).yVel = 1;
 		
-		int testEntity2 = em.createEntity();
+		testEntity2 = em.createEntity();
 		em.addComponent(testEntity2, new Position2D());
 		em.addComponent(testEntity2, new Size2D());
 		em.addComponent(testEntity2, new Render());
@@ -48,7 +52,7 @@ public class TestGameState extends GameState {
 		em.getComponent(testEntity2, Size2D.class).width = 90;
 		em.getComponent(testEntity2, Size2D.class).height = 17;
 		em.getComponent(testEntity2, Velocity2D.class).xVel = 1;
-		em.getComponent(testEntity2, Velocity2D.class).yVel = -1;
+		em.getComponent(testEntity2, Velocity2D.class).yVel = 1;
 		
 		//add any Systems to the systems list
 		//Be sure to add them in the order you want them to execute
@@ -60,6 +64,10 @@ public class TestGameState extends GameState {
 	public void update() {
 		super.update();
 		
+		//switch state trigger
+		if(em.getComponent(testEntity2, Position2D.class).x > 320) {
+			game.changeState(new TestGameState2());
+		}
 	}
 	
 }
