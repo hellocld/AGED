@@ -3,6 +3,10 @@
  */
 package com.hellocld.AGED.basicSystems;
 
+import java.util.Iterator;
+import java.util.Set;
+
+import com.hellocld.AGED.basicComponents.Collision2D;
 import com.hellocld.AGED.core.ASystem;
 import com.hellocld.AGED.core.EntityManager;
 
@@ -21,7 +25,17 @@ public class Collision2DSystem implements ASystem {
 	 */
 	@Override
 	public void execute(EntityManager em) {
-		// TODO Auto-generated method stub
+		//generate the set of all entities containing Collision2D components
+		Set<Integer> collideSet = em.getAllEntitiesPossessingComponent(Collision2D.class);
+		
+		//big ol' loop through the collideSet
+		for(Iterator<Integer> collideIter = collideSet.iterator(); collideIter.hasNext();) {
+			//pick an entity (preferably the next one)
+			int entity = collideIter.next();
+			
+			//next, we check to see if entity is in the collidingEntities HashMap of the entity we're checking;
+			//if it is, that means we've already done the calculations once and don't need to do it again
+		}
 
 	}
 
