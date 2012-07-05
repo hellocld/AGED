@@ -18,7 +18,7 @@ public class Collision2D implements Component {
 	
 	//the enums for the HashMap of collision data
 	public enum CollideType {
-		X, Y, HW, HH, TIME
+		CURRENT_X, CURRENT_Y, NEXT_X, NEXT_Y, HALFWIDTH, HALFHEIGHT, TIME
 	}
 	
 	//the HashMap of this entities' collision data
