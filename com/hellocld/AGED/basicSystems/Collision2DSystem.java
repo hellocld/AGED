@@ -90,10 +90,10 @@ public class Collision2DSystem implements ASystem {
 				float dY = Math.abs(eCollisionData.get(CURRENT_Y) - pCollisionData.get(CURRENT_Y));
 				
 				//the movement vectors of entity and possibleEntity
-				float eMX = Math.abs(eCollisionData.get(NEXT_X) - eCollisionData.get(CURRENT_X));
-				float eMY = Math.abs(eCollisionData.get(NEXT_Y) - eCollisionData.get(CURRENT_Y));
-				float pMX = Math.abs(pCollisionData.get(NEXT_X) - pCollisionData.get(CURRENT_X));
-				float pMY = Math.abs(pCollisionData.get(NEXT_Y) - pCollisionData.get(CURRENT_Y));
+				float eMX = Math.abs(eCollisionData.get(NEXT_X) - eCollisionData.get(CURRENT_X)) + eCollisionData.get(HALFWIDTH);
+				float eMY = Math.abs(eCollisionData.get(NEXT_Y) - eCollisionData.get(CURRENT_Y)) + eCollisionData.get(HALFHEIGHT);
+				float pMX = Math.abs(pCollisionData.get(NEXT_X) - pCollisionData.get(CURRENT_X)) + pCollisionData.get(HALFWIDTH);
+				float pMY = Math.abs(pCollisionData.get(NEXT_Y) - pCollisionData.get(CURRENT_Y)) + pCollisionData.get(HALFHEIGHT);
 				
 				//debug
 				//System.out.println("["+dX+"] "+eMX+" | "+pMX);

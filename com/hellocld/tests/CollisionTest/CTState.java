@@ -35,6 +35,7 @@ public class CTState extends GameState {
 		em.addComponent(entity2, new Render());
 		
 		em.getComponent(entity1, Position2D.class).x = 0;
+		em.getComponent(entity1, Position2D.class).y = 21;
 		em.getComponent(entity1, Size2D.class).width = 20;
 		em.getComponent(entity1, Size2D.class).height = 20;
 		em.getComponent(entity1, Velocity2D.class).xVel = 5;
