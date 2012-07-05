@@ -79,28 +79,6 @@ public class Collision2DSystem implements ASystem {
 				HashMap<CollideType, Float> eCollisionData = new HashMap<CollideType, Float>(em.getComponent(entity, Collision2D.class).collisionData);
 				HashMap<CollideType, Float> pCollisionData = new HashMap<CollideType, Float>(em.getComponent(possibleEntity, Collision2D.class).collisionData);
 				
-				//make a "superobject" for each entity, the size of the entire space the object will take up from where it starts to where it moves to
-				//we'll do the x axis first, so if there's no collision on that axis we can skip the y axis check
-				float eXL = eCollisionData.get(CURRENT_X) - eCollisionData.get(HALFWIDTH);
-				float eXR = eCollisionData.get(NEXT_X) + eCollisionData.get(HALFWIDTH);
-				float pXL = pCollisionData.get(CURRENT_X) - pCollisionData.get(HALFWIDTH);
-				float pXR = pCollisionData.get(NEXT_X) + pCollisionData.get(HALFWIDTH);
-				
-				//do the check
-				// if eXL OR eXR is somewhere inside pX					  
-				if((eXL > pXL && eXL < pXR) || (eXR > pXL && eXR < pXR)) {
-					//if the x check returns true, then do the y check
-					float eYT = eCollisionData.get(CURRENT_Y) - eCollisionData.get(HALFHEIGHT);
-					float eYB = eCollisionData.get(NEXT_Y) + eCollisionData.get(HALFHEIGHT);
-					float pYT = pCollisionData.get(CURRENT_Y) - pCollisionData.get(HALFHEIGHT);
-					float pYB = pCollisionData.get(NEXT_Y) + pCollisionData.get(HALFHEIGHT);
-					if((eYT > pYT && eYT < pYB) || (eYB > pYT && eYB < pYB)) {
-						//if the y check returns true,then there's a collision!
-						//debug log!
-						System.out.println("Collision detected between entities "+entity+" and "+possibleEntity);
-						//DO COLLISION DATA CREATION TESTING STUFF HERE
-					}
-				}
 			}
 			
 		}
