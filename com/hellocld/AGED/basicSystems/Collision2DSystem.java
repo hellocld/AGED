@@ -3,16 +3,22 @@
  */
 package com.hellocld.AGED.basicSystems;
 
+import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.CURRENT_X;
+import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.CURRENT_Y;
+import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.HALFHEIGHT;
+import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.HALFWIDTH;
+import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.NEXT_X;
+import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.NEXT_Y;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
 import com.hellocld.AGED.basicComponents.Collision2D;
+import com.hellocld.AGED.basicComponents.Collision2D.CollideType;
 import com.hellocld.AGED.basicComponents.Position2D;
 import com.hellocld.AGED.basicComponents.Size2D;
 import com.hellocld.AGED.basicComponents.Velocity2D;
-import com.hellocld.AGED.basicComponents.Collision2D.CollideType;
-import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.*;
 import com.hellocld.AGED.core.ASystem;
 import com.hellocld.AGED.core.EntityManager;
 
@@ -79,6 +85,25 @@ public class Collision2DSystem implements ASystem {
 				HashMap<CollideType, Float> eCollisionData = new HashMap<CollideType, Float>(em.getComponent(entity, Collision2D.class).collisionData);
 				HashMap<CollideType, Float> pCollisionData = new HashMap<CollideType, Float>(em.getComponent(possibleEntity, Collision2D.class).collisionData);
 				
+				//next, determine the distance between both entities
+				float dX = Math.abs(eCollisionData.get(CURRENT_X) - pCollisionData.get(CURRENT_X));
+				float dY = Math.abs(eCollisionData.get(CURRENT_Y) - pCollisionData.get(CURRENT_Y));
+				
+				//the movement vectors of entity and possibleEntity
+				float eMX = Math.abs(eCollisionData.get(NEXT_X) - eCollisionData.get(CURRENT_X));
+				float eMY = Math.abs(eCollisionData.get(NEXT_Y) - eCollisionData.get(CURRENT_Y));
+				float pMX = Math.abs(pCollisionData.get(NEXT_X) - pCollisionData.get(CURRENT_X));
+				float pMY = Math.abs(pCollisionData.get(NEXT_Y) - pCollisionData.get(CURRENT_Y));
+				
+				//debug
+				//System.out.println("["+dX+"] "+eMX+" | "+pMX);
+				//check for the collision
+				if((dX <= eMX + pMX) && (dY <= eMY + pMY)) {
+					//collision detected!
+					System.out.println("Overlap detected between entities "+entity+" and "+possibleEntity);
+				} else {
+					continue;
+				}
 			}
 			
 		}

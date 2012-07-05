@@ -26,4 +26,9 @@ public class Collision2D implements Component {
 	
 	//a HashMap of all the colliding entities and their data
 	public HashMap<Integer, HashMap<CollideType, Float>> collidingEntities;
+	
+	public Collision2D() {
+		collisionData = new HashMap<CollideType, Float>();
+		collidingEntities = new HashMap<Integer, HashMap<CollideType, Float>>();
+	}
 }
