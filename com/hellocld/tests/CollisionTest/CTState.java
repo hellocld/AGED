@@ -3,9 +3,18 @@
  */
 package com.hellocld.tests.CollisionTest;
 
+import com.hellocld.AGED.basicComponents.Collision2D;
+import com.hellocld.AGED.basicComponents.Position2D;
+import com.hellocld.AGED.basicComponents.Render;
+import com.hellocld.AGED.basicComponents.SimpleMove;
+import com.hellocld.AGED.basicComponents.Size2D;
+import com.hellocld.AGED.basicComponents.Velocity2D;
+import com.hellocld.AGED.basicSystems.Collision2DSystem;
+import com.hellocld.AGED.basicSystems.Render2DSystem;
+import com.hellocld.AGED.basicSystems.SimpleMoveSystem;
 import com.hellocld.AGED.core.GameState;
-import com.hellocld.AGED.basicComponents.*;
-import com.hellocld.AGED.basicSystems.*;
+import com.hellocld.tests.CollisionTest.ASystems.CollisionMarkerCreatorSystem;
+import com.hellocld.tests.CollisionTest.ASystems.CollisionMarkerHandlerSystem;
 
 /**
  * @author CLD
@@ -27,6 +36,7 @@ public class CTState extends GameState {
 		em.addComponent(entity1, new Collision2D());
 		em.addComponent(entity1, new SimpleMove());
 		em.addComponent(entity1, new Render());
+		
 		em.addComponent(entity2, new Position2D());
 		em.addComponent(entity2, new Size2D());
 		em.addComponent(entity2, new Velocity2D());
@@ -35,7 +45,6 @@ public class CTState extends GameState {
 		em.addComponent(entity2, new Render());
 		
 		em.getComponent(entity1, Position2D.class).x = 0;
-		em.getComponent(entity1, Position2D.class).y = 0;
 		em.getComponent(entity1, Size2D.class).width = 20;
 		em.getComponent(entity1, Size2D.class).height = 20;
 		em.getComponent(entity1, Velocity2D.class).xVel = 5;
@@ -47,6 +56,8 @@ public class CTState extends GameState {
 		systems.add(new Render2DSystem());
 		systems.add(new SimpleMoveSystem());
 		systems.add(new Collision2DSystem());
+		systems.add(new CollisionMarkerCreatorSystem());
+		systems.add(new CollisionMarkerHandlerSystem());
 		
 	}
 	
