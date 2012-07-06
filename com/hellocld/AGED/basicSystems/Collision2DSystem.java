@@ -26,41 +26,47 @@ import com.hellocld.AGED.core.EntityManager;
  *
  */
 public class Collision2DSystem implements ASystem {
-
+	//create all the variables so we're not making new ones on every call. That would be dumb.
+	Set<Integer> collideSet, possibleSet;
+	Iterator<Integer> collideIter, possibleIter;
+	int entity, possibleEntity;
+	HashMap<CollideType, Float> tempCollisionData, eCollisionData, pCollisionData, temp;
+	float dX, dY, eMX, eMY, pMX, pMY, eXVel, eYVel, pXVel, pYVel, collideTimeX, collideTimeY, collideTime;
+	
 	/* (non-Javadoc)
 	 * @see com.hellocld.AGED.core.ASystem#execute(com.hellocld.AGED.core.EntityManager)
 	 */
 	@Override
 	public void execute(EntityManager em) {
 		//generate the set of all entities containing Collision2D components
-		Set<Integer> collideSet = em.getAllEntitiesPossessingComponent(Collision2D.class);
+		collideSet = em.getAllEntitiesPossessingComponent(Collision2D.class);
 		
 		//first, update all the collision data in all the entities and clear the old data
-		for(Iterator<Integer> collideIter = collideSet.iterator(); collideIter.hasNext();) {
-			int entity = collideIter.next();
-			HashMap<CollideType, Float> tempCollisionData = new HashMap<CollideType, Float>(em.getComponent(entity, Collision2D.class).collisionData);
-			tempCollisionData.put(HALFWIDTH, (em.getComponent(entity, Size2D.class).width/2));
-			tempCollisionData.put(HALFHEIGHT, (em.getComponent(entity, Size2D.class).height/2));
-			tempCollisionData.put(CURRENT_X, (em.getComponent(entity, Position2D.class).x + tempCollisionData.get(HALFWIDTH)));
-			tempCollisionData.put(CURRENT_Y, (em.getComponent(entity, Position2D.class).y + tempCollisionData.get(HALFHEIGHT)));
-			tempCollisionData.put(NEXT_X, (em.getComponent(entity, Velocity2D.class).xVel + tempCollisionData.get(CURRENT_X)));
-			tempCollisionData.put(NEXT_Y, (em.getComponent(entity, Velocity2D.class).yVel + tempCollisionData.get(CURRENT_Y)));
+		for(collideIter = collideSet.iterator(); collideIter.hasNext();) {
+			entity = collideIter.next();
+			tempCollisionData = em.getComponent(entity, Collision2D.class).collisionData;
+			tempCollisionData.put(CURRENT_X, em.getComponent(entity, Position2D.class).x + tempCollisionData.get(HALFWIDTH) + tempCollisionData.get(OFFSET_X));
+			tempCollisionData.put(CURRENT_Y, em.getComponent(entity, Position2D.class).y + tempCollisionData.get(HALFHEIGHT) + tempCollisionData.get(OFFSET_Y));
+			tempCollisionData.put(NEXT_X, tempCollisionData.get(CURRENT_X)+em.getComponent(entity, Velocity2D.class).xVel);
+			tempCollisionData.put(NEXT_Y, tempCollisionData.get(CURRENT_Y)+em.getComponent(entity, Velocity2D.class).yVel);
+			
 			em.getComponent(entity, Collision2D.class).collisionData = tempCollisionData;
 			em.getComponent(entity, Collision2D.class).collidingEntities.clear();
+			tempCollisionData.clear();
 		}
 		
 		//big ol' loop through the collideSet
-		for(Iterator<Integer> collideIter = collideSet.iterator(); collideIter.hasNext();) {
+		for(collideIter = collideSet.iterator(); collideIter.hasNext();) {
 			//pick an entity (preferably the next one)
-			int entity = collideIter.next();
+			entity = collideIter.next();
 			
 			//make a new list of all the other entities the one we're checking could possibly collide with
-			Set<Integer> possibleSet = em.getAllEntitiesPossessingComponent(Collision2D.class);
+			possibleSet = em.getAllEntitiesPossessingComponent(Collision2D.class);
 			
 			//and another for loop to go through all the possibles
-			for(Iterator<Integer> possibleIter = possibleSet.iterator(); possibleIter.hasNext();) {
+			for(possibleIter = possibleSet.iterator(); possibleIter.hasNext();) {
 				
-				int possibleEntity = possibleIter.next();
+				possibleEntity = possibleIter.next();
 				//first, we check to see if entity and possible entity are one and the same
 				//if they are, we just skip to the next item in possibleIter; an object can't collide with itself, can it?
 				if(entity == possibleEntity) continue;
@@ -74,20 +80,19 @@ public class Collision2DSystem implements ASystem {
 				//finally, if entity isn't checking against itself and no test has been made against possibleEntity already, we do the maths
 				//for the collision test
 				
-				//first, let's collect all the collision data on both entities in temporary variables so we don't need to keep making calls
-				//to the entity manager
-				HashMap<CollideType, Float> eCollisionData = new HashMap<CollideType, Float>(em.getComponent(entity, Collision2D.class).collisionData);
-				HashMap<CollideType, Float> pCollisionData = new HashMap<CollideType, Float>(em.getComponent(possibleEntity, Collision2D.class).collisionData);
+				//first, let's collect all the collision data on the possibleEntity
+				eCollisionData = em.getComponent(entity, Collision2D.class).collisionData;
+				pCollisionData = em.getComponent(possibleEntity, Collision2D.class).collisionData;
 				
 				//next, determine the distance between both entities
-				float dX = Math.abs(eCollisionData.get(CURRENT_X) - pCollisionData.get(CURRENT_X));
-				float dY = Math.abs(eCollisionData.get(CURRENT_Y) - pCollisionData.get(CURRENT_Y));
+				dX = Math.abs(eCollisionData.get(CURRENT_X) - pCollisionData.get(CURRENT_X));
+				dY = Math.abs(eCollisionData.get(CURRENT_Y) - pCollisionData.get(CURRENT_Y));
 				
 				//the movement vectors of entity and possibleEntity
-				float eMX = Math.abs(eCollisionData.get(NEXT_X) - eCollisionData.get(CURRENT_X)) + eCollisionData.get(HALFWIDTH);
-				float eMY = Math.abs(eCollisionData.get(NEXT_Y) - eCollisionData.get(CURRENT_Y)) + eCollisionData.get(HALFHEIGHT);
-				float pMX = Math.abs(pCollisionData.get(NEXT_X) - pCollisionData.get(CURRENT_X)) + pCollisionData.get(HALFWIDTH);
-				float pMY = Math.abs(pCollisionData.get(NEXT_Y) - pCollisionData.get(CURRENT_Y)) + pCollisionData.get(HALFHEIGHT);
+				eMX = Math.abs(eCollisionData.get(NEXT_X) - eCollisionData.get(CURRENT_X)) + eCollisionData.get(HALFWIDTH);
+				eMY = Math.abs(eCollisionData.get(NEXT_Y) - eCollisionData.get(CURRENT_Y)) + eCollisionData.get(HALFHEIGHT);
+				pMX = Math.abs(pCollisionData.get(NEXT_X) - pCollisionData.get(CURRENT_X)) + pCollisionData.get(HALFWIDTH);
+				pMY = Math.abs(pCollisionData.get(NEXT_Y) - pCollisionData.get(CURRENT_Y)) + pCollisionData.get(HALFHEIGHT);
 				
 				//debug
 				//System.out.println("["+dX+"] "+eMX+" | "+pMX);
@@ -99,14 +104,10 @@ public class Collision2DSystem implements ASystem {
 					//so we need to figure out where and when the collision occurs
 					
 					//we're gonna need the velocity info on both objects
-					float eXVel = em.getComponent(entity, Velocity2D.class).xVel;
-					float eYVel = em.getComponent(entity, Velocity2D.class).yVel;
-					float pXVel = em.getComponent(possibleEntity, Velocity2D.class).xVel;
-					float pYVel = em.getComponent(possibleEntity, Velocity2D.class).yVel;
-					
-					//make the collideTime variables
-					float collideTimeX;
-					float collideTimeY;
+					eXVel = em.getComponent(entity, Velocity2D.class).xVel;
+					eYVel = em.getComponent(entity, Velocity2D.class).yVel;
+					pXVel = em.getComponent(possibleEntity, Velocity2D.class).xVel;
+					pYVel = em.getComponent(possibleEntity, Velocity2D.class).yVel;
 					
 					//probably need to calculate the time first; we can derive where the collision occurs from that
 					//make sure none of the velocities equal zero first
@@ -124,8 +125,7 @@ public class Collision2DSystem implements ASystem {
 					
 					//now check to see which time to use (if for some weird reason they turn out to be different) and add it to the collidingEntities 
 					//data map for entity and possibleEntity
-					HashMap<CollideType, Float> temp = new HashMap<CollideType, Float>();
-					float collideTime;
+					temp = new HashMap<CollideType, Float>();
 					if(collideTimeX != collideTimeY) {
 						if(collideTimeX > collideTimeY) {
 							collideTime = collideTimeY;

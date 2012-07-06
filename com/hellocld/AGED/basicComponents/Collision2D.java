@@ -15,20 +15,27 @@ import com.hellocld.AGED.core.Component;
  *
  */
 public class Collision2D implements Component {
-	
+	public HashMap<CollideType, Float> collisionData = new HashMap<CollideType, Float>();
+	public HashMap<Integer, HashMap<CollideType, Float>> collidingEntities = new HashMap<Integer, HashMap<CollideType, Float>>();
 	//the enums for the HashMap of collision data
 	public enum CollideType {
-		CURRENT_X, CURRENT_Y, NEXT_X, NEXT_Y, HALFWIDTH, HALFHEIGHT, TIME, COLLISION_X, COLLISION_Y
+		CURRENT_X, CURRENT_Y, NEXT_X, NEXT_Y, HALFWIDTH, HALFHEIGHT, TIME, COLLISION_X, COLLISION_Y, OFFSET_X, OFFSET_Y
 	}
 	
-	//the HashMap of this entities' collision data
-	public HashMap<CollideType, Float> collisionData;
-	
-	//a HashMap of all the colliding entities and their data
-	public HashMap<Integer, HashMap<CollideType, Float>> collidingEntities;
-	
 	public Collision2D() {
-		collisionData = new HashMap<CollideType, Float>();
-		collidingEntities = new HashMap<Integer, HashMap<CollideType, Float>>();
+		collisionData.put(CollideType.HALFWIDTH, 0.5f);
+		collisionData.put(CollideType.HALFHEIGHT, 0.5f);
+		collisionData.put(CollideType.OFFSET_X, 0f);
+		collisionData.put(CollideType.OFFSET_X, 0f);
+	}
+	
+	public void setSize(float w, float h) {
+		collisionData.put(CollideType.HALFWIDTH, w/2);
+		collisionData.put(CollideType.HALFHEIGHT, h/2);
+	}
+	
+	public void setOffset(float x, float y) {
+		collisionData.put(CollideType.OFFSET_X, x);
+		collisionData.put(CollideType.OFFSET_Y, y);
 	}
 }
