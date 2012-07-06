@@ -20,7 +20,14 @@ import com.hellocld.AGED.core.ASystem;
  *
  */
 public class Render2DSystem implements ASystem {
-
+	
+	//all the temporary variables used in each cycle
+	Set<Integer> renderSet;
+	Iterator<Integer> renderIter;
+	float x, y, w, h;
+	float[] tempColor = new float[4];
+	int entity;
+	
 	/* (non-Javadoc)
 	 * @see com.hellocld.AGED.core.System#execute()
 	 */
@@ -30,21 +37,22 @@ public class Render2DSystem implements ASystem {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		//get all the renderable Entities
-		Set<Integer> renderSet = em.getAllEntitiesPossessingComponent(Render.class);
+		renderSet = em.getAllEntitiesPossessingComponent(Render.class);
 		
 		//loop through all the renderable entities
-		for(Iterator<Integer> renderIter = renderSet.iterator(); renderIter.hasNext();) {
+		for(renderIter = renderSet.iterator(); renderIter.hasNext();) {
 			//double check just to make sure rendering is turned on; if it isn't, the entity is skipped
-			int entity = renderIter.next();
+			entity = renderIter.next();
 			if(em.getComponent(entity, Render.class).on) {
 				//gather all the necessary info from the components for rendering
-				float x = em.getComponent(entity, Position2D.class).x;
-				float y = em.getComponent(entity, Position2D.class).y;
-				float w = em.getComponent(entity, Size2D.class).width;
-				float h = em.getComponent(entity, Size2D.class).height;
+				x = em.getComponent(entity, Position2D.class).x;
+				y = em.getComponent(entity, Position2D.class).y;
+				w = em.getComponent(entity, Size2D.class).width;
+				h = em.getComponent(entity, Size2D.class).height;
 				
 				//set the color of the quad
-				glColor3f(1.0f, 1.0f, 1.0f);
+				tempColor = em.getComponent(entity, Render.class).color;
+				glColor4f(tempColor[0], tempColor[1], tempColor[2], tempColor[3]);
 				
 				//draw the quad!
 				glBegin(GL_QUADS);
