@@ -120,6 +120,16 @@ public class EntityManager {
 		((HashMap<Integer, T>)dbResult).put(entity, component);
 	}
 	
+	public <T extends Component> boolean hasComponent(int entity, Class<T> component)
+	{
+		HashMap<Integer, ? extends Component> dbResult = componentDB.get(component.getClass());
+		if(dbResult == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	/**
 	 * Makes an Entity by adding it to the Entity List
 	 * @return	the ID of the entity
@@ -147,7 +157,11 @@ public class EntityManager {
 	{
 		synchronized(this)
 		{
-			Entities.remove(entity);
+			if(Entities.contains(entity)) {
+				Entities.remove(entity);
+			} else {
+				throw new IllegalArgumentException("killEntity FAIL: "+entity+" does not exist");
+			}
 		}
 	}
 	
