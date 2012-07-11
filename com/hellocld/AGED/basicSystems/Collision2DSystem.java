@@ -13,6 +13,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.hellocld.AGED.basicComponents.Collision2D;
+import com.hellocld.AGED.basicComponents.Position2D;
+import com.hellocld.AGED.basicComponents.Size2D;
+import com.hellocld.AGED.basicComponents.Velocity2D;
 import com.hellocld.AGED.basicComponents.Collision2D.CollideType;
 import com.hellocld.AGED.core.ASystem;
 import com.hellocld.AGED.core.EntityManager;
@@ -35,7 +38,7 @@ public class Collision2DSystem implements ASystem {
 	float dX, dY, eMX, eMY, pMX, pMY, eXVel, eYVel, pXVel, pYVel, collideTimeX, collideTimeY, collideTime;
 	*/
 	
-	float aX, aY, aXVel, aYVel, bX, bY, bXVel, bYVel, collideX, collideY, collideXtime, collideYtime, collideTime;
+	float aX, aY, aHW, aHH, aXVel, aYVel, bX, bY, bHW, bHH, bXVel, bYVel, collideX, collideY, collideXtime, collideYtime, collideTime;
 	
 	/* (non-Javadoc)
 	 * @see com.hellocld.AGED.core.ASystem#execute(com.hellocld.AGED.core.EntityManager)
@@ -76,15 +79,33 @@ public class Collision2DSystem implements ASystem {
 				//finally, if entity isn't checking against itself and no test has been made against possibleEntity already, we do the maths
 				//for the collision test
 				
+				//collect some data
+				aX = em.getComponent(entity, Position2D.class).x;
+				aY = em.getComponent(entity, Position2D.class).y;
+				aHW = (em.getComponent(entity, Size2D.class).width)/2;
+				aHH = (em.getComponent(entity, Size2D.class).height)/2;
+				aXVel = em.getComponent(entity, Velocity2D.class).xVel;
+				aYVel = em.getComponent(entity, Velocity2D.class).yVel;
+				
+				bX = em.getComponent(possibleEntity, Position2D.class).x;
+				bY = em.getComponent(possibleEntity, Position2D.class).y;
+				bHW = (em.getComponent(possibleEntity, Size2D.class).width)/2;
+				bHH = (em.getComponent(possibleEntity, Size2D.class).height)/2;
+				bXVel = em.getComponent(possibleEntity, Velocity2D.class).xVel;
+				bYVel = em.getComponent(possibleEntity, Velocity2D.class).yVel;
+				
+				
 				//start with a check of the x axis
-				if(calculateD(aX, aXVel, bX, bXVel) < Math.abs(aXVel) + Math.abs(bXVel)) {
+				//System.out.println(calculateD(aX, aXVel, aHW, bX, bXVel, bHW)+" :: "+(Math.abs(aXVel+aHW*2) + Math.abs(bXVel+bHW*2)));
+				
+				if(calculateD(aX, aXVel, aHW, bX, bXVel, bHW) < Math.abs(aXVel+aHW*2) + Math.abs(bXVel+bHW*2)) {
 					//if x axis tests true, check the y axis
 					System.out.println("X axis check TRUE");
-					if(calculateD(aY, aYVel, bY, bYVel) < Math.abs(aYVel) + Math.abs(bYVel)) {
+					if(calculateD(aY, aYVel, aHH, bY, bYVel, bHH) < Math.abs(aYVel+aHH*2) + Math.abs(bYVel+bHH*2)) {
 						System.out.println("X axis check TRUE");
 						//oh hey, a collision! Now let's get the time of the collision
-						collideXtime = calculateTime(aX, aXVel, bX, bXVel);
-						collideYtime = calculateTime(aY, aYVel, bY, bYVel);
+						collideXtime = calculateTime(aX, aXVel, aHW, bX, bXVel, bHW);
+						collideYtime = calculateTime(aY, aYVel, aHW, bY, bYVel, bHW);
 						//if one of the times is less than the other, that's the axis that hit first; we'll use that as our collision time
 						if(collideXtime < collideYtime) {
 							collideTime = collideXtime;
@@ -94,8 +115,8 @@ public class Collision2DSystem implements ASystem {
 						
 						//now let's use collideTime to figure out where the point of collision is
 						//there should be only one point of collision between two objects, so using a or b as the reference shouldn't matter
-						collideX = collideTime * aXVel;
-						collideY = collideTime * aYVel;
+						collideX = collideTime * aXVel + aX;
+						collideY = collideTime * aYVel + aY;
 						
 						//finally, let's add the data to entity and possibleEntity
 						em.getComponent(entity, Collision2D.class).collidingEntities.put(possibleEntity, getCollisionData(collideX, collideY, collideTime));
@@ -122,10 +143,10 @@ public class Collision2DSystem implements ASystem {
 	 * @param bVel	Velocity of the second object
 	 * @return		Total area covered by both objects
 	 */
-	public float calculateD (float a, float aVel, float b, float bVel) {
+	public float calculateD (float a, float aVel, float aH, float b, float bVel, float bH) {
 		float vals[] = {a, aVel+a, b, bVel+b};
 		Arrays.sort(vals);
-		return  Math.abs(vals[0] + vals[3]);
+		return  Math.abs(vals[3] - vals[0] + aH + bH);
 	}
 	
 	
@@ -138,14 +159,13 @@ public class Collision2DSystem implements ASystem {
 	 * @param bVel	Velocity of the second object
 	 * @return		The time of the collision (fraction of one frame cycle)
 	 */
-	public float calculateTime(float a, float aVel, float b, float bVel) {
-		float time;
-		if(aVel == 0 || bVel == 0) {
-			time = Math.abs(a - b);
+	public float calculateTime(float a, float aVel, float aH, float b, float bVel, float bH) {
+		float d = Math.abs(a-b);
+		if(d == 0) {
+			float time = 0;
 			return time;
 		} else {
-			float d = calculateD(a, aVel, b, bVel);
-			time = Math.abs(d/aVel + d/bVel);
+			float time = d/Math.abs(aVel) + Math.abs(bVel);
 			return time;
 		}
 	}
