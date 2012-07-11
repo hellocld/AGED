@@ -3,7 +3,9 @@
  */
 package com.hellocld.AGED.basicSystems;
 
-import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.*;
+import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.COLLISION_X;
+import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.COLLISION_Y;
+import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.TIME;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,9 +13,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.hellocld.AGED.basicComponents.Collision2D;
-import com.hellocld.AGED.basicComponents.Position2D;
-import com.hellocld.AGED.basicComponents.Size2D;
-import com.hellocld.AGED.basicComponents.Velocity2D;
 import com.hellocld.AGED.basicComponents.Collision2D.CollideType;
 import com.hellocld.AGED.core.ASystem;
 import com.hellocld.AGED.core.EntityManager;
@@ -31,8 +30,12 @@ public class Collision2DSystem implements ASystem {
 	Set<Integer> collideSet, possibleSet;
 	Iterator<Integer> collideIter, possibleIter;
 	int entity, possibleEntity;
+	/* OLD VARIABLES
 	HashMap<CollideType, Float> tempCollisionData, eCollisionData, pCollisionData, temp;
 	float dX, dY, eMX, eMY, pMX, pMY, eXVel, eYVel, pXVel, pYVel, collideTimeX, collideTimeY, collideTime;
+	*/
+	
+	float aX, aY, aXVel, aYVel, bX, bY, bXVel, bYVel, collideX, collideY, collideXtime, collideYtime, collideTime;
 	
 	/* (non-Javadoc)
 	 * @see com.hellocld.AGED.core.ASystem#execute(com.hellocld.AGED.core.EntityManager)
@@ -42,18 +45,10 @@ public class Collision2DSystem implements ASystem {
 		//generate the set of all entities containing Collision2D components
 		collideSet = em.getAllEntitiesPossessingComponent(Collision2D.class);
 		
-		//first, update all the collision data in all the entities and clear the old data
+		//first clear the old data
 		for(collideIter = collideSet.iterator(); collideIter.hasNext();) {
 			entity = collideIter.next();
-			tempCollisionData = em.getComponent(entity, Collision2D.class).collisionData;
-			tempCollisionData.put(CURRENT_X, em.getComponent(entity, Position2D.class).x + tempCollisionData.get(HALFWIDTH) + tempCollisionData.get(OFFSET_X));
-			tempCollisionData.put(CURRENT_Y, em.getComponent(entity, Position2D.class).y + tempCollisionData.get(HALFHEIGHT) + tempCollisionData.get(OFFSET_Y));
-			tempCollisionData.put(NEXT_X, tempCollisionData.get(CURRENT_X)+em.getComponent(entity, Velocity2D.class).xVel);
-			tempCollisionData.put(NEXT_Y, tempCollisionData.get(CURRENT_Y)+em.getComponent(entity, Velocity2D.class).yVel);
-			
-			em.getComponent(entity, Collision2D.class).collisionData = tempCollisionData;
 			em.getComponent(entity, Collision2D.class).collidingEntities.clear();
-			tempCollisionData.clear();
 		}
 		
 		//big ol' loop through the collideSet
@@ -81,74 +76,31 @@ public class Collision2DSystem implements ASystem {
 				//finally, if entity isn't checking against itself and no test has been made against possibleEntity already, we do the maths
 				//for the collision test
 				
-				//first, let's collect all the collision data on the possibleEntity
-				eCollisionData = em.getComponent(entity, Collision2D.class).collisionData;
-				pCollisionData = em.getComponent(possibleEntity, Collision2D.class).collisionData;
-				
-				//next, determine the distance between both entities
-				dX = Math.abs(eCollisionData.get(CURRENT_X) - pCollisionData.get(CURRENT_X));
-				dY = Math.abs(eCollisionData.get(CURRENT_Y) - pCollisionData.get(CURRENT_Y));
-				
-				//the movement vectors of entity and possibleEntity
-				eMX = Math.abs(eCollisionData.get(NEXT_X) - eCollisionData.get(CURRENT_X)) + eCollisionData.get(HALFWIDTH);
-				eMY = Math.abs(eCollisionData.get(NEXT_Y) - eCollisionData.get(CURRENT_Y)) + eCollisionData.get(HALFHEIGHT);
-				pMX = Math.abs(pCollisionData.get(NEXT_X) - pCollisionData.get(CURRENT_X)) + pCollisionData.get(HALFWIDTH);
-				pMY = Math.abs(pCollisionData.get(NEXT_Y) - pCollisionData.get(CURRENT_Y)) + pCollisionData.get(HALFHEIGHT);
-				
-				//debug
-				//System.out.println("["+dX+"] "+eMX+" | "+pMX);
-				//check for the collision
-				if((dX <= eMX + pMX) && (dY <= eMY + pMY)) {
-					//collision detected!
-					System.out.println("Overlap detected between entities "+entity+" and "+possibleEntity);
-					
-					//so we need to figure out where and when the collision occurs
-					
-					//we're gonna need the velocity info on both objects
-					eXVel = em.getComponent(entity, Velocity2D.class).xVel;
-					eYVel = em.getComponent(entity, Velocity2D.class).yVel;
-					pXVel = em.getComponent(possibleEntity, Velocity2D.class).xVel;
-					pYVel = em.getComponent(possibleEntity, Velocity2D.class).yVel;
-					
-					//probably need to calculate the time first; we can derive where the collision occurs from that
-					//make sure none of the velocities equal zero first
-					if(eXVel == 0 || pXVel == 0) {
-						collideTimeX = 1;
-					} else {
-						collideTimeX = (dX/Math.abs(eXVel)) + (dX/Math.abs(pXVel));
-					}
-					//repeat for y axis
-					if(eYVel == 0 || pYVel == 0) {
-						collideTimeY = 1;
-					} else {
-						collideTimeY = (dY/Math.abs(eYVel)) + (dY/Math.abs(eYVel));
-					}
-					
-					//now check to see which time to use (if for some weird reason they turn out to be different) and add it to the collidingEntities 
-					//data map for entity and possibleEntity
-					temp = new HashMap<CollideType, Float>();
-					if(collideTimeX != collideTimeY) {
-						if(collideTimeX > collideTimeY) {
-							collideTime = collideTimeY;
-							temp.put(TIME, collideTime);
+				//start with a check of the x axis
+				if(calculateD(aX, aXVel, bX, bXVel) < Math.abs(aXVel) + Math.abs(bXVel)) {
+					//if x axis tests true, check the y axis
+					if(calculateD(aY, aYVel, bY, bYVel) < Math.abs(aYVel) + Math.abs(bYVel)) {
+						//oh hey, a collision! Now let's get the time of the collision
+						collideXtime = calculateTime(aX, aXVel, bX, bXVel);
+						collideYtime = calculateTime(aY, aYVel, bY, bYVel);
+						//if one of the times is less than the other, that's the axis that hit first; we'll use that as our collision time
+						if(collideXtime < collideYtime) {
+							collideTime = collideXtime;
 						} else {
-							collideTime = collideTimeX;
-							temp.put(TIME, collideTime);
+							collideTime = collideYtime;
 						}
-					} else {
-						collideTime = collideTimeX;
-						temp.put(TIME, collideTime);
+						
+						//now let's use collideTime to figure out where the point of collision is
+						//there should be only one point of collision between two objects, so using a or b as the reference shouldn't matter
+						collideX = collideTime * aXVel;
+						collideY = collideTime * aYVel;
+						
+						//finally, let's add the data to entity and possibleEntity
+						em.getComponent(entity, Collision2D.class).collidingEntities.put(possibleEntity, getCollisionData(collideX, collideY, collideTime));
+						em.getComponent(possibleEntity, Collision2D.class).collidingEntities.put(entity, getCollisionData(collideX, collideY, collideTime));
 					}
-					
-					//next, calculate the points of collision and add them to the collidingEntities HashMap
-					temp.put(COLLISION_X, (collideTime * eXVel) + eCollisionData.get(CURRENT_X));
-					temp.put(COLLISION_Y, (collideTime * eYVel) + eCollisionData.get(CURRENT_Y));
-					System.out.println("Collision at ["+temp.get(COLLISION_X)+", "+temp.get(COLLISION_Y)+"]");
-					//and finally, put all the collision data into the collidingEntities HashMaps
-					em.getComponent(entity, Collision2D.class).collidingEntities.put(possibleEntity, temp);
-					em.getComponent(possibleEntity, Collision2D.class).collidingEntities.put(entity, temp);
-									
 				} else {
+					//no collision
 					continue;
 				}
 			}
@@ -182,7 +134,7 @@ public class Collision2DSystem implements ASystem {
 	 * @return		The time of the collision (fraction of one frame cycle)
 	 */
 	public float calculateTime(float a, float aVel, float b, float bVel) {
-		float time = 0;
+		float time;
 		if(aVel == 0 || bVel == 0) {
 			time = Math.abs(a - b);
 			return time;
@@ -191,6 +143,14 @@ public class Collision2DSystem implements ASystem {
 			time = Math.abs(d/aVel + d/bVel);
 			return time;
 		}
+	}
+	
+	public HashMap<CollideType, Float> getCollisionData(float X, float Y, float time) {
+		HashMap<CollideType, Float> tempData = new HashMap<CollideType, Float>();
+		tempData.put(COLLISION_X, X);
+		tempData.put(COLLISION_Y, Y);
+		tempData.put(TIME, time);
+		return tempData;
 	}
 
 }
