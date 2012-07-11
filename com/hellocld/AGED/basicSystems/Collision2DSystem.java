@@ -5,6 +5,7 @@ package com.hellocld.AGED.basicSystems;
 
 import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -154,6 +155,42 @@ public class Collision2DSystem implements ASystem {
 			
 		}
 
+	}
+	
+	/**
+	 * Calculates and returns the total distance covered by two objects along one axis
+	 * @param a	Starting point of the first object
+	 * @param aVel	Velocity of the first object
+	 * @param b	Starting point of the second object
+	 * @param bVel	Velocity of the second object
+	 * @return		Total area covered by both objects
+	 */
+	public float calculateD (float a, float aVel, float b, float bVel) {
+		float vals[] = {a, aVel, b, bVel};
+		Arrays.sort(vals);
+		return  Math.abs(vals[0] + vals[3]);
+	}
+	
+	
+	//this might not be right
+	/**
+	 * Calculates the time of the collision
+	 * @param a		Starting point of the first object
+	 * @param aVel	Velocity of the first object
+	 * @param b		Starting point of the second object
+	 * @param bVel	Velocity of the second object
+	 * @return		The time of the collision (fraction of one frame cycle)
+	 */
+	public float calculateTime(float a, float aVel, float b, float bVel) {
+		float time = 0;
+		if(aVel == 0 || bVel == 0) {
+			time = Math.abs(a - b);
+			return time;
+		} else {
+			float d = calculateD(a, aVel, b, bVel);
+			time = Math.abs(d/aVel + d/bVel);
+			return time;
+		}
 	}
 
 }
