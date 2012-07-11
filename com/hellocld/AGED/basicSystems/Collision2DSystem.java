@@ -79,7 +79,9 @@ public class Collision2DSystem implements ASystem {
 				//start with a check of the x axis
 				if(calculateD(aX, aXVel, bX, bXVel) < Math.abs(aXVel) + Math.abs(bXVel)) {
 					//if x axis tests true, check the y axis
+					System.out.println("X axis check TRUE");
 					if(calculateD(aY, aYVel, bY, bYVel) < Math.abs(aYVel) + Math.abs(bYVel)) {
+						System.out.println("X axis check TRUE");
 						//oh hey, a collision! Now let's get the time of the collision
 						collideXtime = calculateTime(aX, aXVel, bX, bXVel);
 						collideYtime = calculateTime(aY, aYVel, bY, bYVel);
@@ -98,6 +100,9 @@ public class Collision2DSystem implements ASystem {
 						//finally, let's add the data to entity and possibleEntity
 						em.getComponent(entity, Collision2D.class).collidingEntities.put(possibleEntity, getCollisionData(collideX, collideY, collideTime));
 						em.getComponent(possibleEntity, Collision2D.class).collidingEntities.put(entity, getCollisionData(collideX, collideY, collideTime));
+						
+						//a little debug printing to show if the collision detection works
+						System.out.println("Collision between entities "+entity+" and "+possibleEntity+" at ["+collideX+", "+collideY+"], time "+collideTime);
 					}
 				} else {
 					//no collision
@@ -118,7 +123,7 @@ public class Collision2DSystem implements ASystem {
 	 * @return		Total area covered by both objects
 	 */
 	public float calculateD (float a, float aVel, float b, float bVel) {
-		float vals[] = {a, aVel, b, bVel};
+		float vals[] = {a, aVel+a, b, bVel+b};
 		Arrays.sort(vals);
 		return  Math.abs(vals[0] + vals[3]);
 	}
