@@ -115,8 +115,8 @@ public class Collision2DSystem implements ASystem {
 						
 						//now let's use collideTime to figure out where the point of collision is
 						//there should be only one point of collision between two objects, so using a or b as the reference shouldn't matter
-						collideX = collideTime * aXVel + aX;
-						collideY = collideTime * aYVel + aY;
+						collideX = collideTime * ((aXVel+bXVel)/2) + ((aX+bX)/2) + ((aHW + bHW)/2);
+						collideY = collideTime * ((aYVel+bYVel)/2) + ((aY+bY)/2) + ((aHH + bHH)/2);
 						
 						//finally, let's add the data to entity and possibleEntity
 						em.getComponent(entity, Collision2D.class).collidingEntities.put(possibleEntity, getCollisionData(collideX, collideY, collideTime));
