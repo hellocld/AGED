@@ -48,9 +48,19 @@ public class SinglePlayerPong extends GameState {
 		em.addComponent(aiPaddle, new Collision2D());
 		em.addComponent(aiPaddle, new Render());
 		em.addComponent(aiPaddle, new Pause());				//need to create this component!
-		em.getComponent(aiPaddle, Position2D.class).setPosition(5, 105);
+		em.getComponent(aiPaddle, Position2D.class).setPosition(305, 105);
 		em.getComponent(aiPaddle, Size2D.class).setSize(10, 30);
 		
+		//next we'll make the ball
+		em.addComponent(ball, new Position2D());
+		em.addComponent(ball, new Size2D());
+		em.addComponent(ball, new Velocity2D());
+		em.addComponent(ball, new Collision2D());
+		em.addComponent(ball, new Render());
+		em.addComponent(ball, new Pause());					//need to create this component!
+		em.getComponent(ball, Position2D.class).setPosition(155, 115);
+		em.getComponent(ball, Size2D.class).setSize(10, 10);
+		em.getComponent(ball, Velocity2D.class).setVelocity(3, 3);
 	}
 	
 	public void update() {
