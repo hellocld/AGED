@@ -13,8 +13,14 @@ import com.hellocld.AGED.core.Component;
 public class Position2D implements Component {
 	public float x, y;
 	
-	public String printPosition()
+	/**
+	 * A simple way to configure the x and y positions of the component
+	 * @param x	Position on the x axis
+	 * @param y	Position on the y axis
+	 */
+	public void setPosition(float x, float y)
 	{
-		return "("+x+", "+y+")";
+		this.x = x;
+		this.y = y;
 	}
 }

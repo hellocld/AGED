@@ -13,8 +13,14 @@ import com.hellocld.AGED.core.Component;
 public class Size2D implements Component {
 	public float width, height;
 	
-	public String printSize()
+	/**
+	 * Easy way to configure the width and height settings of the component
+	 * @param width		Width
+	 * @param height	Height
+	 */
+	public void setSize(float width, float height)
 	{
-		return "("+width+", "+height+")";
+		this.width = width;
+		this.height = height;
 	}
 }
