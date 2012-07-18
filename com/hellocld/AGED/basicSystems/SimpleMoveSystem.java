@@ -29,9 +29,12 @@ public class SimpleMoveSystem implements ASystem {
 		
 		for(moveIter = moveSet.iterator(); moveIter.hasNext();) {
 			entity = moveIter.next();
-			if(em.getComponent(entity, SimpleMove.class).active){
+			if(em.getComponent(entity, SimpleMove.class).active && !em.getComponent(entity, SimpleMove.class).moved){
 				em.getComponent(entity, Position2D.class).x += em.getComponent(entity, Velocity2D.class).xVel;
 				em.getComponent(entity, Position2D.class).y += em.getComponent(entity, Velocity2D.class).yVel;
+			}
+			if(em.getComponent(entity, SimpleMove.class).moved) {
+				em.getComponent(entity, SimpleMove.class).moved = false;
 			}
 		}
 	}

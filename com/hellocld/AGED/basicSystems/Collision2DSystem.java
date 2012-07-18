@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.hellocld.AGED.basicComponents.Collision2D;
+import com.hellocld.AGED.basicComponents.CollisionGroup;
 import com.hellocld.AGED.basicComponents.Position2D;
 import com.hellocld.AGED.basicComponents.Size2D;
 import com.hellocld.AGED.basicComponents.Velocity2D;
@@ -30,15 +31,19 @@ import com.hellocld.AGED.core.EntityManager;
  */
 public class Collision2DSystem implements ASystem {
 	//create all the variables so we're not making new ones on every call. That would be dumb.
+	Set<String> entityCheckGroups;
+	Iterator<String> entityCheckIter;
+	String entityCheck;
 	Set<Integer> collideSet, possibleSet;
 	Iterator<Integer> collideIter, possibleIter;
-	int entity, possibleEntity;
-	/* OLD VARIABLES
-	HashMap<CollideType, Float> tempCollisionData, eCollisionData, pCollisionData, temp;
-	float dX, dY, eMX, eMY, pMX, pMY, eXVel, eYVel, pXVel, pYVel, collideTimeX, collideTimeY, collideTime;
-	*/
-	
+	int entity, possibleEntity, collisionGroup;
+		
 	float aX, aY, aHW, aHH, aXVel, aYVel, bX, bY, bHW, bHH, bXVel, bYVel, collideX, collideY, collideXtime, collideYtime, collideTime;
+	
+	//this system requires access to a CollisionGroup, so we pass it in the instantiation method
+	public Collision2DSystem(int collisionGroup) {
+		this.collisionGroup = collisionGroup;
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.hellocld.AGED.core.ASystem#execute(com.hellocld.AGED.core.EntityManager)
@@ -59,8 +64,12 @@ public class Collision2DSystem implements ASystem {
 			//pick an entity (preferably the next one)
 			entity = collideIter.next();
 			
-			//make a new list of all the other entities the one we're checking could possibly collide with
-			possibleSet = em.getAllEntitiesPossessingComponent(Collision2D.class);
+			//gather all the possibly colliding entities from the collisionGroup using the entity's checkGroups set
+			entityCheckGroups = em.getComponent(entity, Collision2D.class).checkGroups;
+			for(entityCheckIter = entityCheckGroups.iterator(); entityCheckIter.hasNext();) {
+				entityCheck = entityCheckIter.next();
+				possibleSet.addAll(em.getComponent(collisionGroup, CollisionGroup.class).groups.get(entityCheck));
+			}
 			
 			//and another for loop to go through all the possibles
 			for(possibleIter = possibleSet.iterator(); possibleIter.hasNext();) {

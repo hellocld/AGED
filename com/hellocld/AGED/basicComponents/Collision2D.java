@@ -4,6 +4,8 @@
 package com.hellocld.AGED.basicComponents;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.hellocld.AGED.core.Component;
 
@@ -15,6 +17,7 @@ import com.hellocld.AGED.core.Component;
  *
  */
 public class Collision2D implements Component {
+	public Set<String> checkGroups = new HashSet<String>();
 	public HashMap<CollideType, Float> collisionData = new HashMap<CollideType, Float>();
 	public HashMap<Integer, HashMap<CollideType, Float>> collidingEntities = new HashMap<Integer, HashMap<CollideType, Float>>();
 	//the enums for the HashMap of collision data
@@ -27,6 +30,7 @@ public class Collision2D implements Component {
 		collisionData.put(CollideType.HALFHEIGHT, 0.5f);
 		collisionData.put(CollideType.OFFSET_X, 0f);
 		collisionData.put(CollideType.OFFSET_X, 0f);
+		checkGroups.add("");
 	}
 	
 	public void setSize(float w, float h) {

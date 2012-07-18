@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.hellocld.AGED.basicComponents.Collision2D;
 import com.hellocld.AGED.basicComponents.Position2D;
+import com.hellocld.AGED.basicComponents.SimpleMove;
 import com.hellocld.AGED.basicComponents.Velocity2D;
 import com.hellocld.AGED.core.ASystem;
 import com.hellocld.AGED.core.EntityManager;
@@ -40,6 +41,13 @@ public class BounceSurfaceHandler implements ASystem {
 				if(em.getComponent(bounceSurface, BounceSurface.class).yAxis){
 					em.getComponent(bounceEntity, Velocity2D.class).xVel *= -1;
 				}
+				
+				//move the entity to the location post collision
+				em.getComponent(bounceEntity, Position2D.class).x += em.getComponent(bounceEntity, Velocity2D.class).xVel * (1-time);
+				em.getComponent(bounceEntity, Position2D.class).y += em.getComponent(bounceEntity, Velocity2D.class).yVel * (1-time);
+				
+				//finally, set moved to true so SimpleMoveSystem doesn't try moving it again
+				em.getComponent(bounceEntity, SimpleMove.class).moved = true;
 			}
 			
 		}

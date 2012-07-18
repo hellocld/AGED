@@ -11,6 +11,7 @@ import com.hellocld.AGED.core.Game;
  */
 public class CollisionTest {
 	public static Game collisionTest;
+	
 	/**
 	 * @param args
 	 */
@@ -18,6 +19,7 @@ public class CollisionTest {
 		// TODO Auto-generated method stub
 		collisionTest = new Game();
 		collisionTest.createGame(320, 240, 30, new CTState());
+		
 	}
 
 }

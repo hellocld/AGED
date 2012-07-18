@@ -3,9 +3,13 @@
  */
 package com.hellocld.tests.CollisionTest.ASystems;
 
+import java.util.Iterator;
+import java.util.Set;
+
 import org.lwjgl.input.Keyboard;
 
 import com.hellocld.AGED.basicComponents.Collision2D;
+import com.hellocld.AGED.basicComponents.CollisionGroup;
 import com.hellocld.AGED.basicComponents.Position2D;
 import com.hellocld.AGED.basicComponents.Render;
 import com.hellocld.AGED.basicComponents.SimpleMove;
@@ -21,6 +25,12 @@ import com.hellocld.AGED.core.EntityManager;
 public class BouncingBoxGenerator implements ASystem {
 	public boolean created = false;
 	public int tempEntity;
+	public int collisionGroup;
+	
+	//because this system needs access to the CollisionGroup entity, we pass it when we create it
+	public BouncingBoxGenerator(int collisionGroup) {
+		this.collisionGroup = collisionGroup;
+	}
 	/* (non-Javadoc)
 	 * @see com.hellocld.AGED.core.ASystem#execute(com.hellocld.AGED.core.EntityManager)
 	 */
@@ -41,6 +51,8 @@ public class BouncingBoxGenerator implements ASystem {
 						em.getComponent(tempEntity, Position2D.class).setPosition(155, 115);
 						em.getComponent(tempEntity, Size2D.class).setSize(10, 10);
 						em.getComponent(tempEntity, Velocity2D.class).setVelocity((float)((Math.random()*10) - 5), (float)((Math.random()*10) - 5));
+						em.getComponent(collisionGroup, CollisionGroup.class).addToGroup("bouncingBoxes", tempEntity);
+												
 						created = true;
 					}
 				}
