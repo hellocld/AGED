@@ -69,14 +69,13 @@ public class State1 extends GameState {
 		
 		//add the entities to the groups
 		em.getComponent(utility, EntityGroup.class).addToGroup("collideA", entity[0]);
-		em.getComponent(utility, EntityGroup.class).addToGroup("collideA", entity[2]);
-		em.getComponent(utility, EntityGroup.class).addToGroup("collideA", entity[1]);
-		em.getComponent(utility, EntityGroup.class).addToGroup("collideA", entity[3]);
+		em.getComponent(utility, EntityGroup.class).addToGroup("noCollide", entity[2]);
+		em.getComponent(utility, EntityGroup.class).addToGroup("collideB", entity[1]);
+		em.getComponent(utility, EntityGroup.class).addToGroup("noCollide", entity[3]);
 		
 		//add the groups to the CollideSet
 		//group "noCollide" isn't added, so any entity in "noCollide" will not be checked for a collision
 		em.getComponent(utility, CollideSet.class).addCheck("collideA", "collideB");
-		em.getComponent(utility, CollideSet.class).addCheck("collideA", "collideA");
 		
 		//add the systems
 		systems.add(new Collision2DSystem(utility));
