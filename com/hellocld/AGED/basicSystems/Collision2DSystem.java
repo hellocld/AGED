@@ -9,40 +9,41 @@ import static com.hellocld.AGED.basicComponents.Collision2D.CollideType.TIME;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.hellocld.AGED.basicComponents.CollideSet;
 import com.hellocld.AGED.basicComponents.Collision2D;
-import com.hellocld.AGED.basicComponents.CollisionGroup;
+import com.hellocld.AGED.basicComponents.EntityGroup;
 import com.hellocld.AGED.basicComponents.Position2D;
 import com.hellocld.AGED.basicComponents.Size2D;
 import com.hellocld.AGED.basicComponents.Velocity2D;
 import com.hellocld.AGED.basicComponents.Collision2D.CollideType;
 import com.hellocld.AGED.core.ASystem;
 import com.hellocld.AGED.core.EntityManager;
+import com.hellocld.AGED.util.Pair;
 
 /**
- * Probably one of the most complicated ASystems in AGED, Collision2DSystem checks to see if two objects
- * collided, and then tells each component where they hit, which entity (or entities) they hit, which
- * sides were hit on each collision, etc. From there other ASystems can handle what to do with each
- * entity. 
+ * An ASystem for checking collisions between groups of entities.
  * @author CLD
  *
  */
 public class Collision2DSystem implements ASystem {
 	//create all the variables so we're not making new ones on every call. That would be dumb.
-	Set<String> entityCheckGroups;
-	Iterator<String> entityCheckIter;
-	String entityCheck;
-	Set<Integer> collideSet, possibleSet;
-	Iterator<Integer> collideIter, possibleIter;
-	int entity, possibleEntity, collisionGroup;
+	Set<Pair<String, String>> collidePairs;
+	Pair<String, String> checkPair;
+	Iterator<Pair<String, String>> collidePairsIter;
+	String groupA, groupB;
+	Set<Integer> groupASet, groupBSet;
+	Iterator<Integer> groupAIter, groupBIter;
+	int entityA, entityB, utilityEntity;
 		
 	float aX, aY, aHW, aHH, aXVel, aYVel, bX, bY, bHW, bHH, bXVel, bYVel, collideX, collideY, collideXtime, collideYtime, collideTime;
 	
-	//this system requires access to a CollisionGroup, so we pass it in the instantiation method
-	public Collision2DSystem(int collisionGroup) {
-		this.collisionGroup = collisionGroup;
+	//this system requires access to the entity containing EntityGroup and groupASet components
+	public Collision2DSystem(int utilityEntity) {
+		this.utilityEntity = utilityEntity;
 	}
 	
 	/* (non-Javadoc)
@@ -50,96 +51,54 @@ public class Collision2DSystem implements ASystem {
 	 */
 	@Override
 	public void execute(EntityManager em) {
-		//generate the set of all entities containing Collision2D components
-		collideSet = em.getAllEntitiesPossessingComponent(Collision2D.class);
-		
-		//first clear the old data
-		for(collideIter = collideSet.iterator(); collideIter.hasNext();) {
-			entity = collideIter.next();
-			em.getComponent(entity, Collision2D.class).collidingEntities.clear();
-		}
-		
-		//big ol' loop through the collideSet
-		for(collideIter = collideSet.iterator(); collideIter.hasNext();) {
-			//pick an entity (preferably the next one)
-			entity = collideIter.next();
+		//clear the collidePairs set
+		if(collidePairs == null) collidePairs = new HashSet<Pair<String, String>>();
+		collidePairs.clear();
+		//collect all the collision pairs
+		collidePairs.addAll(em.getComponent(utilityEntity, CollideSet.class).pairs);
+		//start an iterator for the pairs
+		for(collidePairsIter = collidePairs.iterator(); collidePairsIter.hasNext();) {
+			//get the next collision pair/groups to check
+			checkPair = collidePairsIter.next();
+			groupA = checkPair.getLeft();
+			groupB = checkPair.getRight();
+			//create the sets for groupA and groupB
+			if(groupASet == null) groupASet = new HashSet<Integer>();
+			groupASet.clear();
+			groupASet.addAll(em.getComponent(utilityEntity, EntityGroup.class).getGroup(groupA));
 			
-			//gather all the possibly colliding entities from the collisionGroup using the entity's checkGroups set
-			entityCheckGroups = em.getComponent(entity, Collision2D.class).checkGroups;
-			for(entityCheckIter = entityCheckGroups.iterator(); entityCheckIter.hasNext();) {
-				entityCheck = entityCheckIter.next();
-				possibleSet.addAll(em.getComponent(collisionGroup, CollisionGroup.class).groups.get(entityCheck));
-			}
+			if(groupBSet == null) groupBSet = new HashSet<Integer>();
+			groupBSet.clear();
+			groupBSet.addAll(em.getComponent(utilityEntity, EntityGroup.class).getGroup(groupB));
 			
-			//and another for loop to go through all the possibles
-			for(possibleIter = possibleSet.iterator(); possibleIter.hasNext();) {
-				
-				possibleEntity = possibleIter.next();
-				//first, we check to see if entity and possible entity are one and the same
-				//if they are, we just skip to the next item in possibleIter; an object can't collide with itself, can it?
-				if(entity == possibleEntity) continue;
-				
-				//next, we check to see if we've already done a test between possibleEntity and entity (entity will already contain the data for the collision)
-				//this prevents duplicating efforts
-				if(em.getComponent(entity, Collision2D.class).collidingEntities.containsKey(possibleEntity)) {
-					continue;
-				}
-				
-				//finally, if entity isn't checking against itself and no test has been made against possibleEntity already, we do the maths
-				//for the collision test
-				
-				//collect some data
-				aX = em.getComponent(entity, Position2D.class).x;
-				aY = em.getComponent(entity, Position2D.class).y;
-				aHW = (em.getComponent(entity, Size2D.class).width)/2;
-				aHH = (em.getComponent(entity, Size2D.class).height)/2;
-				aXVel = em.getComponent(entity, Velocity2D.class).xVel;
-				aYVel = em.getComponent(entity, Velocity2D.class).yVel;
-				
-				bX = em.getComponent(possibleEntity, Position2D.class).x;
-				bY = em.getComponent(possibleEntity, Position2D.class).y;
-				bHW = (em.getComponent(possibleEntity, Size2D.class).width)/2;
-				bHH = (em.getComponent(possibleEntity, Size2D.class).height)/2;
-				bXVel = em.getComponent(possibleEntity, Velocity2D.class).xVel;
-				bYVel = em.getComponent(possibleEntity, Velocity2D.class).yVel;
-				
-				
-				//start with a check of the x axis
-				//System.out.println(calculateD(aX, aXVel, aHW, bX, bXVel, bHW)+" :: "+(Math.abs(aXVel+aHW*2) + Math.abs(bXVel+bHW*2)));
-				
-				if(calculateD(aX, aXVel, aHW, bX, bXVel, bHW) < Math.abs(aXVel+aHW*2) + Math.abs(bXVel+bHW*2)) {
-					//if x axis tests true, check the y axis
-					System.out.println("X axis check TRUE");
-					if(calculateD(aY, aYVel, aHH, bY, bYVel, bHH) < Math.abs(aYVel+aHH*2) + Math.abs(bYVel+bHH*2)) {
-						System.out.println("X axis check TRUE");
-						//oh hey, a collision! Now let's get the time of the collision
-						collideXtime = calculateTime(aX, aXVel, aHW, bX, bXVel, bHW);
-						collideYtime = calculateTime(aY, aYVel, aHW, bY, bYVel, bHW);
-						//if one of the times is less than the other, that's the axis that hit first; we'll use that as our collision time
-						if(collideXtime < collideYtime) {
-							collideTime = collideXtime;
-						} else {
-							collideTime = collideYtime;
-						}
-						
-						//now let's use collideTime to figure out where the point of collision is
-						//there should be only one point of collision between two objects, so using a or b as the reference shouldn't matter
-						collideX = collideTime * ((aXVel+bXVel)/2) + ((aX+bX)/2) + ((aHW + bHW)/2);
-						collideY = collideTime * ((aYVel+bYVel)/2) + ((aY+bY)/2) + ((aHH + bHH)/2);
-						
-						//finally, let's add the data to entity and possibleEntity
-						em.getComponent(entity, Collision2D.class).collidingEntities.put(possibleEntity, getCollisionData(collideX, collideY, collideTime));
-						em.getComponent(possibleEntity, Collision2D.class).collidingEntities.put(entity, getCollisionData(collideX, collideY, collideTime));
-						
-						//a little debug printing to show if the collision detection works
-						System.out.println("Collision between entities "+entity+" and "+possibleEntity+" at ["+collideX+", "+collideY+"], time "+collideTime);
+			//iterate through each entity in groupASet
+			for(groupAIter = groupASet.iterator(); groupAIter.hasNext();) {
+				//get the first entity in collideIter
+				entityA = groupAIter.next();
+				//iterate through each entity in groupBSet
+				for(groupBIter = groupBSet.iterator(); groupBIter.hasNext();) {
+					//get the first entity in groupBIter
+					entityB = groupBIter.next();
+					
+					//if entityA and entityB are the same, we skip the test and move to the next entityB
+					if(entityA == entityB) continue;
+					
+					//if we've already checked between entity and entityB, we skip the test and move to the next entityB
+					if(em.getComponent(entityA, Collision2D.class).collidingEntities.containsKey(entityB)) continue;
+					
+					//finally we check for an overlap
+					if(checkOverlap(em, entityA, entityB)) {
+						//calculate the collision point and record it!
+						recordCollision(em, entityA, entityB);
+						//debug
+						System.out.println("COLLISION between entity "+entityA+" and "+entityB);
+					} else {
+						//no collision
+						continue;
 					}
-				} else {
-					//no collision
-					continue;
 				}
-			}
-			
+			}	
+				
 		}
 
 	}
@@ -159,7 +118,6 @@ public class Collision2DSystem implements ASystem {
 	}
 	
 	
-	//this might not be right
 	/**
 	 * Calculates the time of the collision
 	 * @param a		Starting point of the first object
@@ -186,5 +144,53 @@ public class Collision2DSystem implements ASystem {
 		tempData.put(TIME, time);
 		return tempData;
 	}
-
+	
+	//a big scary method that checks for an overlap between two entities
+	public boolean checkOverlap(EntityManager em, int entity1, int entity2) {
+		//we collect lots of information about entity1 and entity2 and store it all in these temporary values
+		aX = em.getComponent(entity1, Position2D.class).x;		//x position
+		aY = em.getComponent(entity1, Position2D.class).y;		//y position
+		aHW = (em.getComponent(entity1, Size2D.class).width)/2;	//halfwidth
+		aHH = (em.getComponent(entity1, Size2D.class).height)/2;	//halfheight
+		aXVel = em.getComponent(entity1, Velocity2D.class).xVel;	//x velocity
+		aYVel = em.getComponent(entity1, Velocity2D.class).yVel;	//y velocity
+		
+		bX = em.getComponent(entity2, Position2D.class).x;
+		bY = em.getComponent(entity2, Position2D.class).y;
+		bHW = (em.getComponent(entity2, Size2D.class).width)/2;
+		bHH = (em.getComponent(entity2, Size2D.class).height)/2;
+		bXVel = em.getComponent(entity2, Velocity2D.class).xVel;
+		bYVel = em.getComponent(entity2, Velocity2D.class).yVel;
+		
+		//this horrifyingly long if statement is true only if there is an overlap between entity1 and entity2 across both axis
+		if(calculateD(aX, aXVel, aHW, bX, bXVel, bHW) < Math.abs(aXVel+aHW*2) + Math.abs(bXVel+bHW*2) && calculateD(aY, aYVel, aHH, bY, bYVel, bHH) < Math.abs(aYVel+aHH*2) + Math.abs(bYVel+bHH*2)) {
+			//debug
+			System.out.println("Collision!");
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void recordCollision (EntityManager em, int entity1, int entity2) {
+		//calculate the collision time on both axis
+		collideXtime = calculateTime(aX, aXVel, aHW, bX, bXVel, bHW);
+		collideYtime = calculateTime(aY, aYVel, aHW, bY, bYVel, bHW);
+		
+		//if one of the times is less than the other, that's the axis that hit first; we'll use that as our collision time
+		if(collideXtime < collideYtime) {
+			collideTime = collideXtime;
+		} else {
+			collideTime = collideYtime;
+		}
+		
+		//now let's use collideTime to figure out where the point of collision is
+		//there should be only one point of collision between two objects, so using a or b as the reference shouldn't matter
+		collideX = collideTime * ((aXVel+bXVel)/2) + ((aX+bX)/2) + ((aHW + bHW)/2);
+		collideY = collideTime * ((aYVel+bYVel)/2) + ((aY+bY)/2) + ((aHH + bHH)/2);
+		
+		//finally, let's add the data to entity and entityB
+		em.getComponent(entity1, Collision2D.class).collidingEntities.put(entity2, getCollisionData(collideX, collideY, collideTime));
+		em.getComponent(entity2, Collision2D.class).collidingEntities.put(entity1, getCollisionData(collideX, collideY, collideTime));
+	}
 }
