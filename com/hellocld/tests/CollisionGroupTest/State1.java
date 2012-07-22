@@ -43,26 +43,23 @@ public class State1 extends GameState {
 			em.addComponent(entity[i], new Velocity2D());
 			em.addComponent(entity[i], new SimpleMove());
 			em.addComponent(entity[i], new Render());
+			em.getComponent(entity[i], Size2D.class).setSize(10, 10);
 		}
 		//set values for the entities
 		em.getComponent(entity[0], Position2D.class).setPosition(0, 10);
 		em.getComponent(entity[0], Velocity2D.class).xVel = 5;
-		em.getComponent(entity[0], Size2D.class).setSize(10, 10);
 		em.getComponent(entity[0], Render.class).setColor(1, 0, 0, 1);
 		
 		em.getComponent(entity[1], Position2D.class).setPosition(310, 10);
 		em.getComponent(entity[1], Velocity2D.class).xVel = -5;
-		em.getComponent(entity[1], Size2D.class).setSize(10, 10);
 		em.getComponent(entity[1], Render.class).setColor(0, 0, 1, 1);
 		
 		em.getComponent(entity[2], Position2D.class).setPosition(0, 100);
 		em.getComponent(entity[2], Velocity2D.class).xVel = 5;
-		em.getComponent(entity[2], Size2D.class).setSize(10, 10);
 		em.getComponent(entity[2], Render.class).setColor(1, 1, 0, 1);
 		
 		em.getComponent(entity[3], Position2D.class).setPosition(310, 100);
 		em.getComponent(entity[3], Velocity2D.class).xVel = -5;
-		em.getComponent(entity[3], Size2D.class).setSize(10, 10);
 		em.getComponent(entity[3], Render.class).setColor(0, 1, 1, 1);
 		
 		//create three groups
@@ -73,12 +70,13 @@ public class State1 extends GameState {
 		//add the entities to the groups
 		em.getComponent(utility, EntityGroup.class).addToGroup("collideA", entity[0]);
 		em.getComponent(utility, EntityGroup.class).addToGroup("collideA", entity[2]);
-		em.getComponent(utility, EntityGroup.class).addToGroup("collideB", entity[1]);
-		em.getComponent(utility, EntityGroup.class).addToGroup("noCollide", entity[3]);
+		em.getComponent(utility, EntityGroup.class).addToGroup("collideA", entity[1]);
+		em.getComponent(utility, EntityGroup.class).addToGroup("collideA", entity[3]);
 		
 		//add the groups to the CollideSet
 		//group "noCollide" isn't added, so any entity in "noCollide" will not be checked for a collision
 		em.getComponent(utility, CollideSet.class).addCheck("collideA", "collideB");
+		em.getComponent(utility, CollideSet.class).addCheck("collideA", "collideA");
 		
 		//add the systems
 		systems.add(new Collision2DSystem(utility));

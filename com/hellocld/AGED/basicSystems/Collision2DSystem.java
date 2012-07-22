@@ -87,6 +87,7 @@ public class Collision2DSystem implements ASystem {
 					if(em.getComponent(entityA, Collision2D.class).collidingEntities.containsKey(entityB)) continue;
 					
 					//finally we check for an overlap
+					
 					if(checkOverlap(em, entityA, entityB)) {
 						//calculate the collision point and record it!
 						recordCollision(em, entityA, entityB);
@@ -150,22 +151,20 @@ public class Collision2DSystem implements ASystem {
 		//we collect lots of information about entity1 and entity2 and store it all in these temporary values
 		aX = em.getComponent(entity1, Position2D.class).x;		//x position
 		aY = em.getComponent(entity1, Position2D.class).y;		//y position
-		aHW = (em.getComponent(entity1, Size2D.class).width)/2;	//halfwidth
-		aHH = (em.getComponent(entity1, Size2D.class).height)/2;	//halfheight
+		aHW = (em.getComponent(entity1, Size2D.class).width)*0.5f;	//halfwidth
+		aHH = (em.getComponent(entity1, Size2D.class).height)*0.5f;	//halfheight
 		aXVel = em.getComponent(entity1, Velocity2D.class).xVel;	//x velocity
 		aYVel = em.getComponent(entity1, Velocity2D.class).yVel;	//y velocity
 		
 		bX = em.getComponent(entity2, Position2D.class).x;
 		bY = em.getComponent(entity2, Position2D.class).y;
-		bHW = (em.getComponent(entity2, Size2D.class).width)/2;
-		bHH = (em.getComponent(entity2, Size2D.class).height)/2;
+		bHW = (em.getComponent(entity2, Size2D.class).width)*0.5f;
+		bHH = (em.getComponent(entity2, Size2D.class).height)*0.5f;
 		bXVel = em.getComponent(entity2, Velocity2D.class).xVel;
 		bYVel = em.getComponent(entity2, Velocity2D.class).yVel;
 		
 		//this horrifyingly long if statement is true only if there is an overlap between entity1 and entity2 across both axis
-		if(calculateD(aX, aXVel, aHW, bX, bXVel, bHW) < Math.abs(aXVel+aHW*2) + Math.abs(bXVel+bHW*2) && calculateD(aY, aYVel, aHH, bY, bYVel, bHH) < Math.abs(aYVel+aHH*2) + Math.abs(bYVel+bHH*2)) {
-			//debug
-			System.out.println("Collision!");
+		if((calculateD(aX, aXVel, aHW, bX, bXVel, bHW) <= (Math.abs(aXVel+aHW*2) + Math.abs(bXVel+bHW*2))) && (calculateD(aY, aYVel, aHH, bY, bYVel, bHH) <= (Math.abs(aYVel+aHH*2) + Math.abs(bYVel+bHH*2)))) {
 			return true;
 		} else {
 			return false;
