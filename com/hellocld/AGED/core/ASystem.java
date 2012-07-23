@@ -14,5 +14,5 @@ public interface ASystem {
 	//running and doing stuff.
 	//Also, each system is going to need to work with the EntityManager of it's GameState, so we
 	//pass that to it during the execute function
-	public void execute(EntityManager em);
+	public void execute(Game game, EntityManager em);
 }

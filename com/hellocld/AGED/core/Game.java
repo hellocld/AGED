@@ -16,6 +16,9 @@ public class Game {
 	//the currently running GameState
 	public GameState gs;
 	
+	//various window variables
+	public int width, height, fps;
+	
 	/**
 	 * This will create the game and start the game loop. The game will run until
 	 * the "Close Window" button is selected
@@ -25,7 +28,11 @@ public class Game {
 	 * @param firstState	The initial game state
 	 */
 	public void createGame(int width, int height, int fps, GameState firstState) {
-		Window window = new Window(width, height, fps);
+		this.width = width;
+		this.height = height;
+		this.fps = fps;
+		
+		Window window = new Window(this.width, this.height, this.fps);
 		window.create();
 		this.gs = firstState;
 		gs.game = this;
