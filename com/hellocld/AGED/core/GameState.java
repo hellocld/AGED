@@ -22,6 +22,9 @@ public class GameState {
 	//the game; used to switch states
 	public Game game;
 	
+	//the utility entity; extremely useful
+	public int utilityEntity;
+	
 	public GameState() {
 		
 	}
@@ -29,12 +32,14 @@ public class GameState {
 	public void create() {
 		//make the EntityManager and List of systems for adding stuff
 		em = new EntityManager();
+		utilityEntity = em.createEntity();
+		
 		systems = new LinkedList<ASystem>();
 	}
 	
 	public void update() {
 		//execute the systems
 		for (int i = 0; i<systems.size(); i++)
-			systems.get(i).execute(em);
+			systems.get(i).execute(game, em);
 	}
 }
