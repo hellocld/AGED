@@ -15,13 +15,14 @@ import java.util.Set;
 
 import com.hellocld.AGED.basicComponents.CollideSet;
 import com.hellocld.AGED.basicComponents.Collision2D;
+import com.hellocld.AGED.basicComponents.Collision2D.CollideType;
 import com.hellocld.AGED.basicComponents.EntityGroup;
 import com.hellocld.AGED.basicComponents.Position2D;
 import com.hellocld.AGED.basicComponents.Size2D;
 import com.hellocld.AGED.basicComponents.Velocity2D;
-import com.hellocld.AGED.basicComponents.Collision2D.CollideType;
 import com.hellocld.AGED.core.ASystem;
 import com.hellocld.AGED.core.EntityManager;
+import com.hellocld.AGED.core.Game;
 import com.hellocld.AGED.util.Pair;
 
 /**
@@ -50,7 +51,7 @@ public class Collision2DSystem implements ASystem {
 	 * @see com.hellocld.AGED.core.ASystem#execute(com.hellocld.AGED.core.EntityManager)
 	 */
 	@Override
-	public void execute(EntityManager em) {
+	public void execute(Game game, EntityManager em) {
 		//clear the collidePairs set
 		if(collidePairs == null) collidePairs = new HashSet<Pair<String, String>>();
 		collidePairs.clear();
@@ -153,15 +154,26 @@ public class Collision2DSystem implements ASystem {
 		aY = em.getComponent(entity1, Position2D.class).y;		//y position
 		aHW = (em.getComponent(entity1, Size2D.class).width)*0.5f;	//halfwidth
 		aHH = (em.getComponent(entity1, Size2D.class).height)*0.5f;	//halfheight
-		aXVel = em.getComponent(entity1, Velocity2D.class).xVel;	//x velocity
-		aYVel = em.getComponent(entity1, Velocity2D.class).yVel;	//y velocity
+		if(!em.hasComponent(entity1, Velocity2D.class)) {
+			aXVel = 0;
+			aYVel = 0;
+		} else {
+			aXVel = em.getComponent(entity1, Velocity2D.class).xVel;	//x velocity
+			aYVel = em.getComponent(entity1, Velocity2D.class).yVel;	//y velocity
+		}
+		
 		
 		bX = em.getComponent(entity2, Position2D.class).x;
 		bY = em.getComponent(entity2, Position2D.class).y;
 		bHW = (em.getComponent(entity2, Size2D.class).width)*0.5f;
 		bHH = (em.getComponent(entity2, Size2D.class).height)*0.5f;
-		bXVel = em.getComponent(entity2, Velocity2D.class).xVel;
-		bYVel = em.getComponent(entity2, Velocity2D.class).yVel;
+		if(!em.hasComponent(entity2, Velocity2D.class)) {
+			bXVel = 0;
+			bYVel = 0;
+		} else {
+			bXVel = em.getComponent(entity2, Velocity2D.class).xVel;	//x velocity
+			bYVel = em.getComponent(entity2, Velocity2D.class).yVel;	//y velocity
+		}
 		
 		//this horrifyingly long if statement is true only if there is an overlap between entity1 and entity2 across both axis
 		if((calculateD(aX, aXVel, aHW, bX, bXVel, bHW) <= (Math.abs(aXVel+aHW*2) + Math.abs(bXVel+bHW*2))) && (calculateD(aY, aYVel, aHH, bY, bYVel, bHH) <= (Math.abs(aYVel+aHH*2) + Math.abs(bYVel+bHH*2)))) {
