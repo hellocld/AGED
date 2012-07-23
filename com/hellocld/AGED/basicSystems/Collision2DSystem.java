@@ -36,9 +36,9 @@ public class Collision2DSystem implements ASystem {
 	Pair<String, String> checkPair;
 	Iterator<Pair<String, String>> collidePairsIter;
 	String groupA, groupB;
-	Set<Integer> groupASet, groupBSet;
-	Iterator<Integer> groupAIter, groupBIter;
-	int entityA, entityB, utilityEntity;
+	Set<Integer> groupASet, groupBSet, allCollisionEntities;
+	Iterator<Integer> groupAIter, groupBIter, allCollisionEntitiesIter;
+	int entityA, entityB, utilityEntity, allEntity;
 		
 	float aX, aY, aHW, aHH, aXVel, aYVel, bX, bY, bHW, bHH, bXVel, bYVel, collideX, collideY, collideXtime, collideYtime, collideTime;
 	
@@ -52,6 +52,15 @@ public class Collision2DSystem implements ASystem {
 	 */
 	@Override
 	public void execute(Game game, EntityManager em) {
+		//clear the collidingEntities data of all entities containing Collision2D component
+		if(allCollisionEntities == null) allCollisionEntities = new HashSet<Integer>();
+		allCollisionEntities.clear();
+		allCollisionEntities.addAll(em.getAllEntitiesPossessingComponent(Collision2D.class));
+		for(allCollisionEntitiesIter = allCollisionEntities.iterator(); allCollisionEntitiesIter.hasNext();) {
+			allEntity = allCollisionEntitiesIter.next();
+			em.getComponent(allEntity, Collision2D.class).collidingEntities.clear();
+		}
+		
 		//clear the collidePairs set
 		if(collidePairs == null) collidePairs = new HashSet<Pair<String, String>>();
 		collidePairs.clear();
@@ -78,6 +87,7 @@ public class Collision2DSystem implements ASystem {
 				entityA = groupAIter.next();
 				//iterate through each entity in groupBSet
 				for(groupBIter = groupBSet.iterator(); groupBIter.hasNext();) {
+					
 					//get the first entity in groupBIter
 					entityB = groupBIter.next();
 					
