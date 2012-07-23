@@ -6,12 +6,13 @@ package com.hellocld.tests.GameTest.ASystems;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.lwjgl.input.*;
+import org.lwjgl.input.Keyboard;
 
 import com.hellocld.AGED.basicComponents.Position2D;
 import com.hellocld.AGED.basicComponents.Velocity2D;
 import com.hellocld.AGED.core.ASystem;
 import com.hellocld.AGED.core.EntityManager;
+import com.hellocld.AGED.core.Game;
 import com.hellocld.tests.GameTest.Components.PlayerInput;
 
 /**
@@ -30,7 +31,7 @@ public class PlayerInputSystem implements ASystem {
 	 * @see com.hellocld.AGED.core.ASystem#execute(com.hellocld.AGED.core.EntityManager)
 	 */
 	@Override
-	public void execute(EntityManager em) {
+	public void execute(Game game, EntityManager em) {
 		
 		Set<Integer> inputSet = em.getAllEntitiesPossessingComponent(PlayerInput.class);
 		for(Iterator<Integer> inputIter = inputSet.iterator(); inputIter.hasNext();) {
