@@ -11,6 +11,7 @@ import com.hellocld.AGED.basicComponents.SimpleMove;
 import com.hellocld.AGED.basicComponents.Velocity2D;
 import com.hellocld.AGED.core.ASystem;
 import com.hellocld.AGED.core.EntityManager;
+import com.hellocld.AGED.core.Game;
 
 /**
  * @author chris
@@ -24,7 +25,7 @@ public class SimpleMoveSystem implements ASystem {
 	 * @see com.hellocld.AGED.core.ASystem#execute(com.hellocld.AGED.core.EntityManager)
 	 */
 	@Override
-	public void execute(EntityManager em) {
+	public void execute(Game game, EntityManager em) {
 		moveSet = em.getAllEntitiesPossessingComponent(SimpleMove.class);
 		
 		for(moveIter = moveSet.iterator(); moveIter.hasNext();) {

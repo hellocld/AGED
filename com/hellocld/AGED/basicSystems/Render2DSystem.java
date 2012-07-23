@@ -3,15 +3,24 @@
  */
 package com.hellocld.AGED.basicSystems;
 
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glColor4f;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glVertex2f;
+
 import java.util.Iterator;
 import java.util.Set;
 
-import static org.lwjgl.opengl.GL11.*;
-
-import com.hellocld.AGED.basicComponents.*;
+import com.hellocld.AGED.basicComponents.Position2D;
 import com.hellocld.AGED.basicComponents.Render;
-import com.hellocld.AGED.core.EntityManager;
+import com.hellocld.AGED.basicComponents.Size2D;
 import com.hellocld.AGED.core.ASystem;
+import com.hellocld.AGED.core.EntityManager;
+import com.hellocld.AGED.core.Game;
 
 
 /**
@@ -32,7 +41,7 @@ public class Render2DSystem implements ASystem {
 	 * @see com.hellocld.AGED.core.System#execute()
 	 */
 	@Override
-	public void execute(EntityManager em) {
+	public void execute(Game game, EntityManager em) {
 		//clear all buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
