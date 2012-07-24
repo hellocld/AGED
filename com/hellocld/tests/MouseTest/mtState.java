@@ -38,8 +38,8 @@ public class mtState extends GameState {
 		em.addComponent(entity, new Size2D());
 		em.addComponent(entity, new Collision2D());
 		em.addComponent(entity, new Render());
-		em.getComponent(entity, Position2D.class).setPosition(100,100);
-		em.getComponent(entity, Size2D.class).setSize(64,64);
+		em.getComponent(entity, Position2D.class).setPosition(200,100);
+		em.getComponent(entity, Size2D.class).setSize(64,32);
 		
 		//make our mouse cursor entity
 		mouse = new AGEDmouse().create(this, 16, 16);
@@ -58,7 +58,7 @@ public class mtState extends GameState {
 		systems.add(new Render2DSystem());
 		
 		//grab and hide the system mouse cursor
-		Mouse.setGrabbed(true);
+		//Mouse.setGrabbed(true);
 	}
 	
 	public void update() {

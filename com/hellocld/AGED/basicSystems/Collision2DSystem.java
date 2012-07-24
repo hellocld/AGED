@@ -124,11 +124,14 @@ public class Collision2DSystem implements ASystem {
 	 * @return		Total area covered by both objects
 	 */
 	public float calculateD (float a, float aVel, float aH, float b, float bVel, float bH) {
-		float vals[] = {a, aVel+a, b, bVel+b};
+		float vals[] = {a + aH*2, a, aVel+a+aH*2, aVel+a, b+bH*2, b, bVel+b+bH*2, bVel+b};
 		Arrays.sort(vals);
-		return  Math.abs(vals[3] - vals[0] + aH + bH);
+		return  Math.abs(vals[7] - vals[0]);
 	}
 	
+	public float calculatePostArea(float aVel, float aH, float bVel, float bH) {
+		return (Math.abs(aVel) + Math.abs(bVel) + aH*2 + bH*2);
+	}
 	
 	/**
 	 * Calculates the time of the collision
@@ -186,7 +189,7 @@ public class Collision2DSystem implements ASystem {
 		}
 		
 		//this horrifyingly long if statement is true only if there is an overlap between entity1 and entity2 across both axis
-		if((calculateD(aX, aXVel, aHW, bX, bXVel, bHW) <= (Math.abs(aXVel+aHW*2) + Math.abs(bXVel+bHW*2))) && (calculateD(aY, aYVel, aHH, bY, bYVel, bHH) <= (Math.abs(aYVel+aHH*2) + Math.abs(bYVel+bHH*2)))) {
+		if(calculateD(aX, aXVel, aHW, bX, bXVel, bHW) <= calculatePostArea(aXVel, aHW, bXVel, bHW) && calculateD(aY, aYVel, aHH, bY, bYVel, bHH) <= calculatePostArea(aYVel, aHH, bYVel, bHH)) {
 			return true;
 		} else {
 			return false;
