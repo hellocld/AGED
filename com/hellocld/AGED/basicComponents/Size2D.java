@@ -18,6 +18,19 @@ public class Size2D implements Component {
 	 * @param width		Width
 	 * @param height	Height
 	 */
+	
+	public Size2D(){}
+	
+	/**
+	 * Declare the dimensions of the component
+	 * @param width		Width
+	 * @param height	Height
+	 */
+	public Size2D(float width, float height) {
+		this.width = width;
+		this.height = height;
+	}
+	
 	public void setSize(float width, float height)
 	{
 		this.width = width;

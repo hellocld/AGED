@@ -18,6 +18,20 @@ public class Position2D implements Component {
 	 * @param x	Position on the x axis
 	 * @param y	Position on the y axis
 	 */
+	
+	
+	public Position2D(){}
+	
+	/**
+	 * Declare the position of the component
+	 * @param x	X position
+	 * @param y	Y position
+	 */
+	public Position2D(float x, float y) {
+		this.x = x;
+		this.y = y;
+	}
+	
 	public void setPosition(float x, float y)
 	{
 		this.x = x;
