@@ -3,8 +3,6 @@
  */
 package com.hellocld.tests.MouseTest;
 
-import org.lwjgl.input.Mouse;
-
 import com.hellocld.AGED.Toolkit.AGEDmouse;
 import com.hellocld.AGED.basicComponents.CollideSet;
 import com.hellocld.AGED.basicComponents.Collision2D;
