@@ -123,7 +123,7 @@ public class Collision2DSystem implements ASystem {
 	 * @param bVel	Velocity of the second object
 	 * @return		Total area covered by both objects
 	 */
-	public float calculateD (float a, float aVel, float aH, float b, float bVel, float bH) {
+	public float calculateAxisArea (float a, float aVel, float aH, float b, float bVel, float bH) {
 		float vals[] = {a + aH*2, a, aVel+a+aH*2, aVel+a, b+bH*2, b, bVel+b+bH*2, bVel+b};
 		Arrays.sort(vals);
 		return  Math.abs(vals[7] - vals[0]);
@@ -189,7 +189,7 @@ public class Collision2DSystem implements ASystem {
 		}
 		
 		//this horrifyingly long if statement is true only if there is an overlap between entity1 and entity2 across both axis
-		if(calculateD(aX, aXVel, aHW, bX, bXVel, bHW) <= calculatePostArea(aXVel, aHW, bXVel, bHW) && calculateD(aY, aYVel, aHH, bY, bYVel, bHH) <= calculatePostArea(aYVel, aHH, bYVel, bHH)) {
+		if(calculateAxisArea(aX, aXVel, aHW, bX, bXVel, bHW) <= calculatePostArea(aXVel, aHW, bXVel, bHW) && calculateAxisArea(aY, aYVel, aHH, bY, bYVel, bHH) <= calculatePostArea(aYVel, aHH, bYVel, bHH)) {
 			return true;
 		} else {
 			return false;
