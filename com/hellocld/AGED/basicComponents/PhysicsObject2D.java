@@ -15,6 +15,8 @@ public class PhysicsObject2D implements Component {
 	float x, y;
 	//define the size of the object
 	float width, height;
+	//the offset of the physics object (useful for making objects smaller/larger than their sprites)
+	float offsetX, offsetY;
 	//the mass of the object
 	float mass;
 	//the velocity of the object
@@ -28,79 +30,23 @@ public class PhysicsObject2D implements Component {
 	 * @param y			Y position (top left)
 	 * @param width		Width
 	 * @param height	Height
+	 * @param offsetX	X offset of the object
+	 * @param offsetY	Y offset of the object
 	 * @param mass		Mass
 	 * @param xVel		X velocity
 	 * @param yVel		Y velocity
 	 * @param label		A basic identifier for the object
 	 */
-	public PhysicsObject2D(float x, float y, float width, float height, float mass, float xVel, float yVel, String label) {
+	public PhysicsObject2D(float x, float y, float width, float height, float xVel, float yVel) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.mass = mass;
+		this.offsetX = 0;
+		this.offsetY = 0;
+		this.mass = 0;
 		this.xVel = xVel;
 		this.yVel = yVel;
-		this.label = label;
-	}
-	
-	/**
-	 * Define the parameters for the Physics Object
-	 * @param x			X position (top left)
-	 * @param y			Y position (top left)
-	 * @param width		Width
-	 * @param height	Height
-	 * @param mass		Mass
-	 * @param xVel		X velocity
-	 * @param yVel		Y velocity
-	 */
-	public PhysicsObject2D(float x, float y, float width, float height, float mass, float xVel, float yVel) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.mass = mass;
-		this.xVel = xVel;
-		this.yVel = yVel;
-		this.label = "";
-	}
-
-	/**
-	 * Define the parameters for the Physics Object
-	 * @param x			X position (top left)
-	 * @param y			Y position (top left)
-	 * @param width		Width
-	 * @param height	Height
-	 * @param label		A basic identifier for the object
-	 */
-	public PhysicsObject2D(float x, float y, float width, float height, String label) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.label = label;
-		
-		this.mass = 0;
-		this.xVel = 0;
-		this.yVel = 0;
-	}
-	
-	/**
-	 * Define the parameters for the Physics Object
-	 * @param x			X position (top left)
-	 * @param y			Y position (top left)
-	 * @param width		Width
-	 * @param height	Height
-	 */
-	public PhysicsObject2D(float x, float y, float width, float height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		
-		this.mass = 0;
-		this.xVel = 0;
-		this.yVel = 0;
 		this.label = "";
 	}
 	
@@ -132,6 +78,14 @@ public class PhysicsObject2D implements Component {
 		return yVel;
 	}
 	
+	public float getXoffset() {
+		return offsetX;
+	}
+	
+	public float getYoffset() {
+		return offsetY;
+	}
+	
 	public String getLabel() {
 		return label;
 	}
@@ -144,6 +98,11 @@ public class PhysicsObject2D implements Component {
 	public void setSize(float width, float height) {
 		this.width = width;
 		this.height = height;
+	}
+	
+	public void setOffset(float x, float y) {
+		this.offsetX = x;
+		this.offsetY = y;
 	}
 	
 	public void setVelocity(float xVel, float yVel) {
